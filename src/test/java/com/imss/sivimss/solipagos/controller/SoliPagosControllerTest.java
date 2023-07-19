@@ -44,6 +44,71 @@ public class SoliPagosControllerTest extends BaseTest {
 	                .build();
 	 }
 	 
+	 @Test
+	 @DisplayName("lista tipos solicitud")
+	 @Order(1)
+	 public void listaTipos() throws Exception {
+	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
+	       MockModCatalogosClient.listaTiposSol(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/lista_tipos_mock.json"), JsonUtil.readFromJson("json/response/response_lista_tipos.json"), myToken, mockServer);
+	       this.mockMvc.perform(post("/solipagos/lista-tipsoli")
+	                    .contentType(MediaType.APPLICATION_JSON)
+	                    .accept(MediaType.APPLICATION_JSON)
+	                    .header("Authorization","Bearer " + myToken)
+	                    .content(JsonUtil.readFromJson("json/request/lista_tipos_controller.json"))
+	                    .with(csrf()))
+	                .andDo(print())
+	                .andExpect(status().isOk());
+	 }
 	 
+	 @Test
+	 @DisplayName("busqueda")
+	 @Order(2)
+	 public void buscar() throws Exception {
+	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
+	       MockModCatalogosClient.buscarSoli(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/buscar_solic_mock.json"), JsonUtil.readFromJson("json/response/response_buscar_solic.json"), myToken, mockServer);
+	       this.mockMvc.perform(post("/solipagos/buscar")
+	                    .contentType(MediaType.APPLICATION_JSON)
+	                    .accept(MediaType.APPLICATION_JSON)
+	                    .header("Authorization","Bearer " + myToken)
+	                    .content(JsonUtil.readFromJson("json/request/buscar_solic_controller.json"))
+	                    .with(csrf()))
+	                .andDo(print())
+	                .andExpect(status().isOk());
+	 }
 	 
+	 @Test
+	 @DisplayName("detalle")
+	 @Order(3)
+	 public void detalle() throws Exception {
+	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
+	       MockModCatalogosClient.detalle(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/detalle_solic_mock.json"), JsonUtil.readFromJson("json/response/response_detalle_solic.json"), myToken, mockServer);
+	       this.mockMvc.perform(post("/solipagos/detalle")
+	                    .contentType(MediaType.APPLICATION_JSON)
+	                    .accept(MediaType.APPLICATION_JSON)
+	                    .header("Authorization","Bearer " + myToken)
+	                    .content(JsonUtil.readFromJson("json/request/detalle_solic_controller.json"))
+	                    .with(csrf()))
+	                .andDo(print())
+	                .andExpect(status().isOk());
+	 }
+	 
+	 @Test
+	 @DisplayName("generar")
+	 @Order(4)
+	 public void generar() throws Exception {
+	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
+	       MockModCatalogosClient.generarSoli(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/genera_solic_mock.json"), JsonUtil.readFromJson("json/response/response_genera_solic.json"), myToken, mockServer);
+	       this.mockMvc.perform(post("/solipagos/generar")
+	                    .contentType(MediaType.APPLICATION_JSON)
+	                    .accept(MediaType.APPLICATION_JSON)
+	                    .header("Authorization","Bearer " + myToken)
+	                    .content(JsonUtil.readFromJson("json/request/genera_solic_controller.json"))
+	                    .with(csrf()))
+	                .andDo(print())
+	                .andExpect(status().isOk());
+	 }
 }
