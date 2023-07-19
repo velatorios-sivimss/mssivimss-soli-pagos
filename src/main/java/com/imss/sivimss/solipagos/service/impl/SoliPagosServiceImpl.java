@@ -3,6 +3,8 @@ package com.imss.sivimss.solipagos.service.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.modelmapper.ModelMapper;
@@ -10,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +20,10 @@ import com.imss.sivimss.solipagos.util.LogUtil;
 import com.imss.sivimss.solipagos.util.ProviderServiceRestTemplate;
 import com.google.gson.Gson;
 import com.imss.sivimss.solipagos.model.request.BusquedaDto;
+import com.imss.sivimss.solipagos.model.request.SolicitudPagoDto;
 import com.imss.sivimss.solipagos.util.AppConstantes;
+import com.imss.sivimss.solipagos.exception.BadRequestException;
+import com.imss.sivimss.solipagos.model.request.UsuarioDto;
 import com.imss.sivimss.solipagos.beans.SolicitudPago;
 import com.imss.sivimss.solipagos.service.SoliPagosService;
 import com.imss.sivimss.solipagos.util.DatosRequest;
@@ -32,6 +38,10 @@ public class SoliPagosServiceImpl implements SoliPagosService {
     private static final String PAGINADO = "/paginado";
 	
 	private static final String CONSULTA = "/consulta";
+	
+	private static final String CREAR = "/crear";
+	
+	private static final String ALTA = "alta";
 	
 	private static final String ACTUALIZAR = "/actualizar";
 	
@@ -155,14 +165,44 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 
 	@Override
 	public Response<Object> detalle(DatosRequest request, Authentication authentication) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		SolicitudPagoDto solicitudPagoDto = gson.fromJson(datosJson, SolicitudPagoDto.class);
+		if (solicitudPagoDto.getIdSolicitud() == null ) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
+		}
+		SolicitudPago solicitudPago = new SolicitudPago();
+		solicitudPago.setId(solicitudPagoDto.getIdSolicitud());
+		try {
+		    return providerRestTemplate.consumirServicio(solicitudPago.detalle(request, formatoFecha).getDatos(), urlDominio + CONSULTA, authentication);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			return null;
+		}
+
 	}
 
 	@Override
 	public Response<Object> generarSoli(DatosRequest request, Authentication authentication) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		SolicitudPagoDto solicitudDto = gson.fromJson(datosJson, SolicitudPagoDto.class);
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
+		SolicitudPago solicitudPago = new SolicitudPago();
+		solicitudPago.setIdUsuarioAlta(usuarioDto.getIdUsuario());
+		
+		try {
+			return providerRestTemplate.consumirServicio(solicitudPago.crearSolicitud(solicitudDto, formatoFecha).getDatos(), urlDominio + CREAR, authentication);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e.getMessage());
+	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
+			return null;
+	     }
+		
 	}
 
 	@Override
