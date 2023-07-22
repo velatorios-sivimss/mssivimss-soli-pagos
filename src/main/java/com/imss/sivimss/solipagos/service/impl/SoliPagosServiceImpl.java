@@ -24,6 +24,7 @@ import com.imss.sivimss.solipagos.model.request.SolicitudPagoDto;
 import com.imss.sivimss.solipagos.util.AppConstantes;
 import com.imss.sivimss.solipagos.exception.BadRequestException;
 import com.imss.sivimss.solipagos.model.request.UsuarioDto;
+import com.imss.sivimss.solipagos.model.response.CambioEstatusResponse;
 import com.imss.sivimss.solipagos.beans.SolicitudPago;
 import com.imss.sivimss.solipagos.service.SoliPagosService;
 import com.imss.sivimss.solipagos.util.DatosRequest;
@@ -45,6 +46,8 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 	
 	private static final String ACTUALIZAR = "/actualizar";
 	
+	private static final String MODIFICACION = "modificacion";
+	
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;
 	
@@ -53,7 +56,9 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 	
 	private static final String INFONOENCONTRADA = "45";
 	
-    private static final String NOMBREPDFREPORTE = "reportes/generales/ReporteGeneraPagos.jrxml";
+	private static final String FOLIOFISCALNOEXISTE = "143";
+	
+    private static final String NOMBREPDFREPORTE = "reportes/generales/ReporteSolicitudPagos.jrxml";
 	
 	@Autowired
 	private LogUtil logUtil;
@@ -184,6 +189,25 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 
 	}
 
+	public Response<Object> partidas(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		SolicitudPagoDto solicitudPagoDto = gson.fromJson(datosJson, SolicitudPagoDto.class);
+		if (solicitudPagoDto.getCveFolioGastos() == null ) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
+		}
+		SolicitudPago solicitudPago = new SolicitudPago();
+		solicitudPago.setFolioFiscal(solicitudPagoDto.getCveFolioGastos());
+		try {
+			return providerRestTemplate.consumirServicio(solicitudPago.partidas(request, formatoFecha).getDatos(), urlDominio + CONSULTA, authentication);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			return null;
+		}
+	}
+		
 	@Override
 	public Response<Object> generarSoli(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
@@ -207,14 +231,76 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 
 	@Override
 	public Response<Object> aprobarSoli(DatosRequest request, Authentication authentication) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+        Gson gson = new Gson();
+		
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
+
+		datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		CambioEstatusResponse cambioEstatus = gson.fromJson(datosJson, CambioEstatusResponse.class);
+		cambioEstatus.setIdUsuario(usuarioDto.getIdUsuario());
+		if (cambioEstatus.getIdSolicitud() == null) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
+		}
+		SolicitudPago solicitudPago = new SolicitudPago();
+		
+		try {
+			return providerRestTemplate.consumirServicio(solicitudPago.aceptarSolicitud(cambioEstatus).getDatos(), urlDominio + ACTUALIZAR, authentication);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
+			return null;
+		}
+	
 	}
 	
 	@Override
 	public Response<Object> cancelarSoli(DatosRequest request, Authentication authentication) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+        Gson gson = new Gson();
+		
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
+
+		datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		CambioEstatusResponse cambioEstatus = gson.fromJson(datosJson, CambioEstatusResponse.class);
+		cambioEstatus.setIdUsuario(usuarioDto.getIdUsuario());
+		if (cambioEstatus.getIdSolicitud() == null || cambioEstatus.getMotivo() == null) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
+		}
+		SolicitudPago solicitudPago = new SolicitudPago();
+		
+		try {
+			return providerRestTemplate.consumirServicio(solicitudPago.cancelarSolicitud(cambioEstatus).getDatos(), urlDominio + ACTUALIZAR, authentication);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
+			return null;
+		}
+	
+	}
+	
+	@Override
+	public Response<Object> rechazarSoli(DatosRequest request, Authentication authentication) throws IOException {
+        Gson gson = new Gson();
+		
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
+
+		datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		CambioEstatusResponse cambioEstatus = gson.fromJson(datosJson, CambioEstatusResponse.class);
+		cambioEstatus.setIdUsuario(usuarioDto.getIdUsuario());
+		if (cambioEstatus.getIdSolicitud() == null || cambioEstatus.getMotivo() == null) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
+		}
+		SolicitudPago solicitudPago = new SolicitudPago();
+		
+		try {
+			return providerRestTemplate.consumirServicio(solicitudPago.rechazarSolicitud(cambioEstatus).getDatos(), urlDominio + ACTUALIZAR, authentication);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
+			return null;
+		}
 	}
 
 	@Override

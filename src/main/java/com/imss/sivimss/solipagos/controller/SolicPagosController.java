@@ -97,6 +97,18 @@ public class SolicPagosController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
+	@PostMapping("/partidas")
+	public CompletableFuture<Object> partidas(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+		
+		Response<?> response = soliPagosService.partidas(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+
+	}
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
 	@PostMapping("/generar")
 	public CompletableFuture<Object> generar(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
 		
@@ -125,6 +137,18 @@ public class SolicPagosController {
 	public CompletableFuture<Object> cancelar(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
 		
 		Response<?> response = soliPagosService.cancelarSoli(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+
+	}
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+	@PostMapping("/rechazar")
+	public CompletableFuture<Object> rechazar(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+		
+		Response<?> response = soliPagosService.rechazarSoli(request, authentication);
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 

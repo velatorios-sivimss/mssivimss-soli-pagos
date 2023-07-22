@@ -11,6 +11,7 @@ import com.imss.sivimss.solipagos.util.QueryHelper;
 import com.imss.sivimss.solipagos.model.request.BusquedaDto;
 import com.imss.sivimss.solipagos.util.DatosRequest;
 import com.imss.sivimss.solipagos.model.request.SolicitudPagoDto;
+import com.imss.sivimss.solipagos.model.response.CambioEstatusResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,7 @@ public class SolicitudPago {
 	
 	private Integer id;
 	private Integer idUsuarioAlta;
+	private String folioFiscal;
 	
 	private static final Integer NIVEL_DELEGACION = 2;
 	private static final Integer NIVEL_VELATORIO = 3;
@@ -116,6 +118,14 @@ public class SolicitudPago {
 		return request;
 	}
 	
+	public DatosRequest partidas(DatosRequest request, String formatoFecha) throws UnsupportedEncodingException {
+		StringBuilder query = new StringBuilder("");
+		
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+		request.getDatos().put(AppConstantes.QUERY, encoded);
+		return request;
+	}	
+	
 	public DatosRequest crearSolicitud(SolicitudPagoDto solicPagoDto, String formatoFecha) throws UnsupportedEncodingException {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
@@ -135,7 +145,7 @@ public class SolicitudPago {
 		q.agregarParametroValues("DES_OBSERVACIONES", setValor(solicPagoDto.getObservaciones()));
 		q.agregarParametroValues("ID_VELATORIO", "" + solicPagoDto.getIdVelatorio());
 		q.agregarParametroValues("NUM_EJERCICIO_FISCAL", "" + solicPagoDto.getEjercicioFiscal());
-		q.agregarParametroValues("ID_ESTATUS_SOLICITUD", "" + solicPagoDto.getIdEstatusSol());
+		q.agregarParametroValues("ID_ESTATUS_SOLICITUD", "1");
 		q.agregarParametroValues("ID_USUARIO_ALTA", "" + this.idUsuarioAlta);
 		
 		String query = q.obtenerQueryInsertar();
@@ -146,7 +156,44 @@ public class SolicitudPago {
 		return request;
 	}
 		
+	public DatosRequest aceptarSolicitud(CambioEstatusResponse cambioEstatus) throws UnsupportedEncodingException {
+	    DatosRequest request = new DatosRequest();
+	    Map<String, Object> parametro = new HashMap<>();
+	    String query =" UPDATE SVT_SOLICITUD_PAGO SET ID_ESTATUS_SOLICITUD = 2, ID_USUARIO_MODIFICA = " + cambioEstatus.getIdUsuario() +
+	    		", FEC_ACTUALIZACION = CURRENT_TIMESTAMP() WHERE ID_SOLICITUD_PAGO = " + cambioEstatus.getIdSolicitud();
+	 
+	    String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+		return request;
+    }
 	
+	public DatosRequest cancelarSolicitud(CambioEstatusResponse cambioEstatus) throws UnsupportedEncodingException {
+	    DatosRequest request = new DatosRequest();
+	    Map<String, Object> parametro = new HashMap<>();
+	    String query =" UPDATE SVT_SOLICITUD_PAGO SET ID_ESTATUS_SOLICITUD = 0, ID_USUARIO_MODIFICA = " + cambioEstatus.getIdUsuario() +
+	    		", FEC_ACTUALIZACION = CURRENT_TIMESTAMP(), DES_MOTIVO_CANCELACION = '" + cambioEstatus.getMotivo() + "' " +
+	    	    "WHERE ID_SOLICITUD_PAGO = " + cambioEstatus.getIdSolicitud();
+	 
+	    String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+		return request;
+    }
+	
+	public DatosRequest rechazarSolicitud(CambioEstatusResponse cambioEstatus) throws UnsupportedEncodingException {
+	    DatosRequest request = new DatosRequest();
+	    Map<String, Object> parametro = new HashMap<>();
+	    String query =" UPDATE SVT_SOLICITUD_PAGO SET ID_ESTATUS_SOLICITUD = 3, ID_USUARIO_MODIFICA = " + cambioEstatus.getIdUsuario() +
+	    		", FEC_ACTUALIZACION = CURRENT_TIMESTAMP(), DES_MOTIVO_RECHAZO = '" + cambioEstatus.getMotivo() + "' " +
+	    	    "WHERE ID_SOLICITUD_PAGO = " + cambioEstatus.getIdSolicitud();
+	 
+	    String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+		return request;
+    }
+	    		
 	private StringBuilder armaQuery(String formatoFecha) {
 		
 		StringBuilder query = new StringBuilder("SELECT SP.ID_SOLICITUD_PAGO AS idSolicitud, VEL.DES_VELATORIO AS desVelatorio, NULLIF(SP.CVE_FOLIO_GASTOS,SP.CVE_FOLIO_CONSIGNADOS) AS cveFolio, \n");

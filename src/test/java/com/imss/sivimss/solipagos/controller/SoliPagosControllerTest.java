@@ -111,4 +111,5 @@ public class SoliPagosControllerTest extends BaseTest {
 	                .andDo(print())
 	                .andExpect(status().isOk());
 	 }
+	 
 }
