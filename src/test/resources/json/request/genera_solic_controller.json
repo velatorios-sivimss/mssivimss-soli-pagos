@@ -1,0 +1,18 @@
+{
+	"idTipoSolic": 1,
+    "cveFolioGastos": "JHAJHDDJAS",
+    "cveFolioConsignados" : "GADGHAJDAJDH",
+    "idUnidadMedica" : 1,
+    "idDelegacion": 1, 
+    "nomDestinatario" : "PANCHO LÓPEZ",
+    "nomRemitente" : "MIGUEL SANCHEZ",
+    "numReferencia" : 1244,
+    "idContratBenef" : 1,
+    "fechaInicial" : "10/07/2023",
+    "fechaFinal" : "12/07/2023",
+    "concepto" : "DAKHDHJASDGHASDHJ",
+    "observaciones" : "DAHDJAQSUYWDTYUQHUSIYEDEUWUIQIWUIE",
+    "idVelatorio" : 1,
+    "ejercicioFiscal" : 2022,
+    "idEstatusSol" : 1
+}

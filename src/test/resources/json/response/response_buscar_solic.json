@@ -1,0 +1,45 @@
+{
+    "error": false,
+    "codigo": 200,
+    "mensaje": "Exito",
+    "datos": {
+        "content": [
+            {
+                "fecElaboracion": "18/07/2023",
+                "ejercicioFiscal": 2022,
+                "idTipoSolicitid": 1,
+                "desEstatusSolicitud": "Pendiente",
+                "desVelatorio": "DOCTORES",
+                "nomBeneficiario": "JUAN GARCIA RAMIRES",
+                "cveFolio": "GGGGGG88",
+                "desTipoSolicitud": "Solicitud de bienes y servicios por comprobar",
+                "idEstatus": 1
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "empty": true,
+                "sorted": false,
+                "unsorted": true
+            },
+            "offset": 0,
+            "pageNumber": 0,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+        },
+        "totalElements": 1,
+        "totalPages": 1,
+        "last": true,
+        "size": 10,
+        "number": 0,
+        "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+        },
+        "numberOfElements": 1,
+        "first": true,
+        "empty": false
+    }
+}

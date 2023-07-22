@@ -1,0 +1,31 @@
+{
+    "error": false,
+    "codigo": 200,
+    "mensaje": "Exito",
+    "datos": [
+        {
+            "tipoSolicitud": 1,
+            "desTipoSolicitud": "Solicitud de bienes y servicios por comprobar"
+        },
+        {
+            "tipoSolicitud": 2,
+            "desTipoSolicitud": "Solicitud de comprobación de bienes y servicios"
+        },
+        {
+            "tipoSolicitud": 3,
+            "desTipoSolicitud": "Solicitud de reembolso de fondo fijo revolvente"
+        },
+        {
+            "tipoSolicitud": 4,
+            "desTipoSolicitud": "Solicitud de pago"
+        },
+        {
+            "tipoSolicitud": 5,
+            "desTipoSolicitud": "Solicitud de pago a consignantes"
+        },
+        {
+            "tipoSolicitud": 6,
+            "desTipoSolicitud": "Solicitud de pago por contrato"
+        }
+    ]
+}

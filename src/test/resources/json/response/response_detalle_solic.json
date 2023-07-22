@@ -1,0 +1,21 @@
+{
+    "error": false,
+    "codigo": 200,
+    "mensaje": "Exito",
+    "datos": [
+        {
+            "cveFolioGastos": "JHAJHDDJAS",
+            "fecElaboracion": "19/07/2023",
+            "ejercicioFiscal": 2022,
+            "idDelegacion": 1,
+            "unidadMedica": 1,
+            "idTipoSolicitid": 3,
+            "desEstatusSolicitud": "Pendiente",
+            "desVelatorio": "DOCTORES",
+            "nomBeneficiario": "JUAN GARCIA RAMIRES",
+            "desTipoSolicitud": "Solicitud de reembolso de fondo fijo revolvente",
+            "idEstatusSol": 1,
+            "cveFolioConsignados": "GADGHAJDAJDH"
+        }
+    ]
+}
