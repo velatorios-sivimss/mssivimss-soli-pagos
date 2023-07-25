@@ -23,6 +23,8 @@ public interface SoliPagosService {
 	
 	Response<Object> generarSoli(DatosRequest request, Authentication authentication) throws IOException;
 	
+	Response<Object> generarPdf(DatosRequest request, Authentication authentication) throws IOException;
+	
 	Response<Object> aprobarSoli(DatosRequest request, Authentication authentication) throws IOException;
 	
 	Response<Object> cancelarSoli(DatosRequest request, Authentication authentication) throws IOException;

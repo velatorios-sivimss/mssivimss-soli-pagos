@@ -25,6 +25,7 @@ import com.imss.sivimss.solipagos.util.AppConstantes;
 import com.imss.sivimss.solipagos.exception.BadRequestException;
 import com.imss.sivimss.solipagos.model.request.UsuarioDto;
 import com.imss.sivimss.solipagos.model.response.CambioEstatusResponse;
+import com.imss.sivimss.solipagos.util.MensajeResponseUtil;
 import com.imss.sivimss.solipagos.beans.SolicitudPago;
 import com.imss.sivimss.solipagos.service.SoliPagosService;
 import com.imss.sivimss.solipagos.util.DatosRequest;
@@ -47,6 +48,8 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 	private static final String ACTUALIZAR = "/actualizar";
 	
 	private static final String MODIFICACION = "modificacion";
+	
+	private static final String ERROR_DESCARGA = "64";
 	
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;
@@ -221,12 +224,17 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		try {
 			return providerRestTemplate.consumirServicio(solicitudPago.crearSolicitud(solicitudDto, formatoFecha).getDatos(), urlDominio + CREAR, authentication);
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
 			return null;
 	     }
 		
+	}
+	
+	@Override
+	public Response<Object> generarPdf(DatosRequest request, Authentication authentication) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -305,8 +313,19 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 
 	@Override
 	public Response<Object> descargarDocto(DatosRequest request, Authentication authentication) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		Gson gson = new Gson();
+		
+		String datosJson = String.valueOf(authentication.getPrincipal());
+		BusquedaDto buscaUser = gson.fromJson(datosJson, BusquedaDto.class);
+		
+		datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		BusquedaDto reporteDto = gson.fromJson(datosJson, BusquedaDto.class);
+		reporteDto.setIdOficina(buscaUser.getIdOficina());
+		reporteDto.setIdDelegacion(buscaUser.getIdDelegacion());
+		
+		Map<String, Object> envioDatos = new SolicitudPago().generarReporte(reporteDto, NOMBREPDFREPORTE, formatoFecha);
+		Response<Object> response =  providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
+		return MensajeResponseUtil.mensajeConsultaResponse(response, ERROR_DESCARGA);
 	}
 
 }
