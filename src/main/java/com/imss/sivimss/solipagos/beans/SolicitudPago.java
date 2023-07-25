@@ -193,6 +193,33 @@ public class SolicitudPago {
 		request.setDatos(parametro);
 		return request;
     }
+	
+	public Map<String, Object> generarReporte(BusquedaDto reporteDto,String nombrePdfReportes, String formatoFecha){
+		Map<String, Object> envioDatos = new HashMap<>();
+		StringBuilder condicion = new StringBuilder(" ");
+		if (reporteDto.getIdOficina().equals(NIVEL_DELEGACION)) {
+			condicion.append(" AND VEL.ID_DELEGACION = ").append(reporteDto.getIdDelegacion());
+    	} else if (reporteDto.getIdVelatorio() != null) {
+			condicion.append(" AND SP.ID_VELATORIO = ").append(reporteDto.getIdVelatorio());
+		}
+		if (reporteDto.getFecInicial() != null) {
+			condicion.append(" AND DATE(SP.FEC_ALTA) BETWEEN STR_TO_DATE('" + reporteDto.getFecInicial() + "','" + formatoFecha + "') AND STR_TO_DATE('" + reporteDto.getFecFinal() + "','" + formatoFecha + "')");
+    	}
+		if (reporteDto.getEjercicioFiscal() != null) {
+			condicion.append(" AND SP.NUM_EJERCICIO_FISCAL = " + reporteDto.getEjercicioFiscal());
+		}
+		if (reporteDto.getIdTipoSolicitud() != null) {
+			condicion.append(" AND SP.ID_TIPO_SOLICITUD = " + reporteDto.getIdTipoSolicitud());
+		}
+		if (reporteDto.getFolioSolicitud() != null) {
+			condicion.append(" AND SP.CVE_FOLIO_GASTOS = '" + reporteDto.getFolioSolicitud() + "' ");
+		}
+		envioDatos.put("condicion", condicion.toString());
+		envioDatos.put("tipoReporte", reporteDto.getTipoReporte());
+		envioDatos.put("rutaNombreReporte", nombrePdfReportes);
+		
+		return envioDatos;
+	}
 	    		
 	private StringBuilder armaQuery(String formatoFecha) {
 		

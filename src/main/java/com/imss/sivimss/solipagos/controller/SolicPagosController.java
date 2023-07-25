@@ -121,6 +121,18 @@ public class SolicPagosController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
+	@PostMapping("/genera-pdf")
+	public CompletableFuture<Object> generaPdf(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+		
+		Response<?> response = soliPagosService.generarPdf(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+
+	}
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
 	@PostMapping("/aprobar")
 	public CompletableFuture<Object> aprobar(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
 		
