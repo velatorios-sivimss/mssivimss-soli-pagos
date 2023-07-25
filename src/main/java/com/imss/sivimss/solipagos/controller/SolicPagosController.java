@@ -97,10 +97,10 @@ public class SolicPagosController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
-	@PostMapping("/partidas")
-	public CompletableFuture<Object> partidas(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+	@PostMapping("/factura")
+	public CompletableFuture<Object> factura(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
 		
-		Response<?> response = soliPagosService.partidas(request, authentication);
+		Response<?> response = soliPagosService.factura(request, authentication);
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 

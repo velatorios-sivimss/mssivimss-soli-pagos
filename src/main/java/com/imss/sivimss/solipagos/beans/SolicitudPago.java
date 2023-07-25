@@ -118,8 +118,9 @@ public class SolicitudPago {
 		return request;
 	}
 	
-	public DatosRequest partidas(DatosRequest request, String formatoFecha) throws UnsupportedEncodingException {
-		StringBuilder query = new StringBuilder("");
+	public DatosRequest factura(DatosRequest request) throws UnsupportedEncodingException {
+		StringBuilder query = new StringBuilder("SELECT PARTIDA_PRES AS partidaPres, CUENTA_CONTABLE AS cuentaContable, ");
+		query.append("IMP_TOTAL AS importeTotal FROM SVC_FACTURA WHERE CVE_FOLIO_FISCAL = '" + this.folioFiscal + "' ");
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);

@@ -19,7 +19,7 @@ public interface SoliPagosService {
 	
 	Response<Object> detalle(DatosRequest request, Authentication authentication) throws IOException;
 	
-	Response<Object> partidas(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> factura(DatosRequest request, Authentication authentication) throws IOException;
 	
 	Response<Object> generarSoli(DatosRequest request, Authentication authentication) throws IOException;
 	

@@ -192,7 +192,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 
 	}
 
-	public Response<Object> partidas(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> factura(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
@@ -202,8 +202,14 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		}
 		SolicitudPago solicitudPago = new SolicitudPago();
 		solicitudPago.setFolioFiscal(solicitudPagoDto.getCveFolioGastos());
+		Response<Object> response = null;
 		try {
-			return providerRestTemplate.consumirServicio(solicitudPago.partidas(request, formatoFecha).getDatos(), urlDominio + CONSULTA, authentication);
+			response = providerRestTemplate.consumirServicio(solicitudPago.factura(request).getDatos(), urlDominio + CONSULTA, authentication);
+			ArrayList datos1 = (ArrayList) response.getDatos();
+			if (datos1.isEmpty()) {
+				response.setMensaje(FOLIOFISCALNOEXISTE);
+		    }
+			return response;
 		} catch (Exception e) {
 			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
