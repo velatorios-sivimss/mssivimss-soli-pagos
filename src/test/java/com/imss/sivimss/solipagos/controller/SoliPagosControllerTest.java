@@ -96,17 +96,51 @@ public class SoliPagosControllerTest extends BaseTest {
 	 }
 	 
 	 @Test
-	 @DisplayName("generar")
+	 @DisplayName("agregar")
 	 @Order(4)
-	 public void generar() throws Exception {
+	 public void agregar() throws Exception {
 	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
-	       MockModCatalogosClient.generarSoli(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/genera_solic_mock.json"), JsonUtil.readFromJson("json/response/response_genera_solic.json"), myToken, mockServer);
-	       this.mockMvc.perform(post("/solipagos/generar")
+	       MockModCatalogosClient.agregarSoli(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/agrega_solic_mock.json"), JsonUtil.readFromJson("json/response/response_agrega_solic.json"), myToken, mockServer);
+	       this.mockMvc.perform(post("/solipagos/agregar")
 	                    .contentType(MediaType.APPLICATION_JSON)
 	                    .accept(MediaType.APPLICATION_JSON)
 	                    .header("Authorization","Bearer " + myToken)
-	                    .content(JsonUtil.readFromJson("json/request/genera_solic_controller.json"))
+	                    .content(JsonUtil.readFromJson("json/request/agrega_solic_controller.json"))
+	                    .with(csrf()))
+	                .andDo(print())
+	                .andExpect(status().isOk());
+	 }
+	 
+	 @Test
+	 @DisplayName("aprobar")
+	 @Order(5)
+	 public void aprobar() throws Exception {
+	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
+	       MockModCatalogosClient.aprobarSoli(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/aprueba_solic_mock.json"), JsonUtil.readFromJson("json/response/response_aprueba_solic.json"), myToken, mockServer);
+	       this.mockMvc.perform(post("/solipagos/aprobar")
+	                    .contentType(MediaType.APPLICATION_JSON)
+	                    .accept(MediaType.APPLICATION_JSON)
+	                    .header("Authorization","Bearer " + myToken)
+	                    .content(JsonUtil.readFromJson("json/request/aprueba_solic_controller.json"))
+	                    .with(csrf()))
+	                .andDo(print())
+	                .andExpect(status().isOk());
+	 }
+	 
+	 @Test
+	 @DisplayName("cancelar")
+	 @Order(6)
+	 public void cancelar() throws Exception {
+	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
+	       MockModCatalogosClient.cancelarSoli(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/cancela_solic_mock.json"), JsonUtil.readFromJson("json/response/response_cancela_solic.json"), myToken, mockServer);
+	       this.mockMvc.perform(post("/solipagos/cancelar")
+	                    .contentType(MediaType.APPLICATION_JSON)
+	                    .accept(MediaType.APPLICATION_JSON)
+	                    .header("Authorization","Bearer " + myToken)
+	                    .content(JsonUtil.readFromJson("json/request/cancela_solic_controller.json"))
 	                    .with(csrf()))
 	                .andDo(print())
 	                .andExpect(status().isOk());

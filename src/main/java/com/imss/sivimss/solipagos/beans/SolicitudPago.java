@@ -33,7 +33,7 @@ public class SolicitudPago {
 	private static final Integer NIVEL_DELEGACION = 2;
 	private static final Integer NIVEL_VELATORIO = 3;
 	
-	public DatosRequest listaEjercicios(BusquedaDto busqueda) throws UnsupportedEncodingException {
+	public DatosRequest listaEjercicios() throws UnsupportedEncodingException {
     	DatosRequest request = new DatosRequest();
     	Map<String, Object> parametro = new HashMap<>();
     	StringBuilder query = new StringBuilder("SELECT EXTRACT(YEAR FROM NOW()) AS anio");
@@ -101,7 +101,7 @@ public class SolicitudPago {
 	
 	public DatosRequest detalle(DatosRequest request, String formatoFecha) throws UnsupportedEncodingException {
 		StringBuilder query = new StringBuilder("SELECT VEL.DES_VELATORIO AS desVelatorio, SP.CVE_FOLIO_GASTOS AS cveFolioGastos, SP.CVE_FOLIO_CONSIGNADOS AS cveFolioConsignados, \n");
-		query.append("SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, SP.ID_UNIDAD_MEDICA AS unidadMedica, SP.ID_DELEGACION as idDelegacion, DATE_FORMAT(SP.FEC_ALTA,'" + formatoFecha + "') AS fecElaboracion, \n");
+		query.append("SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, SP.ID_UNIDAD_OPERATIVA AS unidadOperativa, DATE_FORMAT(SP.FEC_ALTA,'" + formatoFecha + "') AS fecElaboracion, \n");
 	    query.append("SP.ID_TIPO_SOLICITUD AS idTipoSolicitid, TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud, \n");
 		query.append("CONCAT(PER.NOM_PERSONA,' ',PER.NOM_PRIMER_APELLIDO,' ',PER.NOM_SEGUNDO_APELLIDO) AS nomBeneficiario, \n");
 		query.append("SP.ID_ESTATUS_SOLICITUD AS idEstatusSol, EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud \n");
@@ -118,13 +118,56 @@ public class SolicitudPago {
 		return request;
 	}
 	
-	public DatosRequest partidas(DatosRequest request, String formatoFecha) throws UnsupportedEncodingException {
-		StringBuilder query = new StringBuilder("");
+	public DatosRequest factura(DatosRequest request) throws UnsupportedEncodingException {
+		StringBuilder query = new StringBuilder("SELECT PARTIDA_PRES AS partidaPres, CUENTA_CONTABLE AS cuentaContable, ");
+		query.append("IMP_TOTAL AS importeTotal FROM SVC_FACTURA WHERE CVE_FOLIO_FISCAL = '" + this.folioFiscal + "' ");
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
-	}	
+	}
+	
+	public DatosRequest listaVelatorios(BusquedaDto busqueda) throws UnsupportedEncodingException {
+    	DatosRequest request = new DatosRequest();
+    	Map<String, Object> parametro = new HashMap<>();
+    	StringBuilder query = new StringBuilder("SELECT ID_VELATORIO AS idVelatorio, DES_VELATORIO AS desVelatorio, NOM_RESPO_SANITARIO AS nomResponsable ");
+	    query.append("FROM SVC_VELATORIO ");
+    	if (busqueda.getIdOficina().equals(NIVEL_DELEGACION)) {
+    		query.append(" WHERE ID_DELEGACION = ").append(busqueda.getIdDelegacion());
+    	} else if (busqueda.getIdOficina().equals(NIVEL_VELATORIO)) {
+    		query.append(" WHERE ID_VELATORIO = ").append(busqueda.getIdVelatorio());
+    	}
+    	
+    	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+    	return request;
+	}
+	
+	public DatosRequest listaUnidadesOpe() throws UnsupportedEncodingException {
+    	DatosRequest request = new DatosRequest();
+    	Map<String, Object> parametro = new HashMap<>();
+    	StringBuilder query = new StringBuilder("SELECT ID_SUBDIRECCION AS idSubdireccion, NOM_SUBDIRECCION AS nomSubdireccion, ");
+    	query.append("DES_REFERENCIA AS referencia, NOM_RESPONSABLE AS nomResponsable ");
+    	query.append("FROM SVT_SUBDIRECCION_FIBESO");
+    	
+    	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+    	return request;
+	}
+	
+	public DatosRequest listaDatosBanco() throws UnsupportedEncodingException {
+    	DatosRequest request = new DatosRequest();
+    	Map<String, Object> parametro = new HashMap<>();
+    	StringBuilder query = new StringBuilder("SELECT DES_BANCO AS banco, CVE_BANCARIA AS cveBancaria, '' AS cuenta ");
+    	query.append("FROM SVT_PROVEEDOR");
+    	
+    	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+    	return request;
+	}
 	
 	public DatosRequest crearSolicitud(SolicitudPagoDto solicPagoDto, String formatoFecha) throws UnsupportedEncodingException {
 		DatosRequest request = new DatosRequest();
@@ -133,8 +176,7 @@ public class SolicitudPago {
 		q.agregarParametroValues("ID_TIPO_SOLICITUD", "" + solicPagoDto.getIdTipoSolic());
 		q.agregarParametroValues("CVE_FOLIO_GASTOS", setValor(solicPagoDto.getCveFolioGastos()));
 		q.agregarParametroValues("CVE_FOLIO_CONSIGNADOS", setValor(solicPagoDto.getCveFolioConsignados()));
-		q.agregarParametroValues("ID_UNIDAD_MEDICA", "" + solicPagoDto.getIdUnidadMedica());
-		q.agregarParametroValues("ID_DELEGACION", "" + solicPagoDto.getIdDelegacion());
+		q.agregarParametroValues("ID_UNIDAD_OPERATIVA", "" + solicPagoDto.getIdUnidadOperativa());
 		q.agregarParametroValues("DES_NOMBRE_DESTINATARIO", setValor(solicPagoDto.getNomDestinatario()));
 		q.agregarParametroValues("DES_NOMBRE_REMITENTE", setValor(solicPagoDto.getNomRemitente()));
 		q.agregarParametroValues("NUM_REFERENCIA_DT", "" + solicPagoDto.getNumReferencia());
@@ -156,7 +198,7 @@ public class SolicitudPago {
 		return request;
 	}
 		
-	public DatosRequest aceptarSolicitud(CambioEstatusResponse cambioEstatus) throws UnsupportedEncodingException {
+	public DatosRequest aprobarSolicitud(CambioEstatusResponse cambioEstatus) throws UnsupportedEncodingException {
 	    DatosRequest request = new DatosRequest();
 	    Map<String, Object> parametro = new HashMap<>();
 	    String query =" UPDATE SVT_SOLICITUD_PAGO SET ID_ESTATUS_SOLICITUD = 2, ID_USUARIO_MODIFICA = " + cambioEstatus.getIdUsuario() +
@@ -227,7 +269,8 @@ public class SolicitudPago {
 		query.append("SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, DATE_FORMAT(SP.FEC_ALTA,'" + formatoFecha + "') AS fecElaboracion, \n");
 	    query.append("SP.ID_TIPO_SOLICITUD AS idTipoSolicitid, TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud, \n");
 		query.append("CONCAT(PER.NOM_PERSONA,' ',PER.NOM_PRIMER_APELLIDO,' ',PER.NOM_SEGUNDO_APELLIDO) AS nomBeneficiario, \n");
-		query.append("SP.ID_ESTATUS_SOLICITUD AS idEstatus, EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud \n");
+		query.append("SP.ID_ESTATUS_SOLICITUD AS idEstatus, EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud, \n");
+		query.append("SP.DES_MOTIVO_CANCELACION AS motCancelacion, SP.DES_MOTIVO_RECHAZO AS motRechazo ");
 		query.append("FROM SVT_SOLICITUD_PAGO SP \n");
 		query.append("JOIN SVC_VELATORIO VEL ON VEL.ID_VELATORIO = SP.ID_VELATORIO \n");
 		query.append("JOIN SVC_TIPO_SOLICITUD_PAGO TIP ON TIP.ID_TIPO_SOLICITUD = SP.ID_TIPO_SOLICITUD \n");

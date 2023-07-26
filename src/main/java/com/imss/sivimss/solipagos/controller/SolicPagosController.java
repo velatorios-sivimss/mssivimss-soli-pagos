@@ -97,10 +97,10 @@ public class SolicPagosController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
-	@PostMapping("/partidas")
-	public CompletableFuture<Object> partidas(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+	@PostMapping("/factura")
+	public CompletableFuture<Object> factura(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
 		
-		Response<?> response = soliPagosService.partidas(request, authentication);
+		Response<?> response = soliPagosService.factura(request, authentication);
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 
@@ -109,10 +109,46 @@ public class SolicPagosController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
-	@PostMapping("/generar")
-	public CompletableFuture<Object> generar(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+	@PostMapping("/velatorios")
+	public CompletableFuture<Object> velatorios(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
 		
-		Response<?> response = soliPagosService.generarSoli(request, authentication);
+		Response<?> response = soliPagosService.listaVelatorios(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+
+	}
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+	@PostMapping("/unidades-ope")
+	public CompletableFuture<Object> unidadesOpe(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+		
+		Response<?> response = soliPagosService.listaUnidadesOpe(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+
+	}
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+	@PostMapping("/datos-banco")
+	public CompletableFuture<Object> datosBanco(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+		
+		Response<?> response = soliPagosService.listaDatosBanco(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+
+	}
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+	@PostMapping("/agregar")
+	public CompletableFuture<Object> agregar(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+		
+		Response<?> response = soliPagosService.agregarSoli(request, authentication);
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 
