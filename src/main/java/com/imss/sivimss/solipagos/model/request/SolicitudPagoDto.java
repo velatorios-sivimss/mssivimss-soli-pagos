@@ -14,8 +14,7 @@ public class SolicitudPagoDto {
 	private Integer idTipoSolic;
 	private String cveFolioGastos;
 	private String cveFolioConsignados;
-	private Integer idUnidadMedica;
-	private Integer idDelegacion;
+	private Integer idUnidadOperativa;
 	private String nomDestinatario;
 	private String nomRemitente;
 	private Integer numReferencia;

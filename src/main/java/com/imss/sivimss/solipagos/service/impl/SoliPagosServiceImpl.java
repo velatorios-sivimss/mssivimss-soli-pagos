@@ -76,15 +76,11 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 
 	@Override
 	public Response<Object> listaEjercicios(DatosRequest request, Authentication authentication) throws IOException {
-		Gson gson = new Gson();
 		SolicitudPago solicitudPago = new SolicitudPago();
-		
-		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
-		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
 		Response<Object> response = null;
 		
 		try {
-		    response = providerRestTemplate.consumirServicio(solicitudPago.listaEjercicios(busqueda).getDatos(), urlDominio + CONSULTA, authentication);
+		    response = providerRestTemplate.consumirServicio(solicitudPago.listaEjercicios().getDatos(), urlDominio + CONSULTA, authentication);
 		    ArrayList<LinkedHashMap> datos1 = (ArrayList) response.getDatos();
 		    Integer anioActual = (Integer) datos1.get(0).get("anio");
 		    ArrayList<Integer> arrAnios = new ArrayList<Integer>();
@@ -216,9 +212,52 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 			return null;
 		}
 	}
-		
+	
 	@Override
-	public Response<Object> generarSoli(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> listaVelatorios(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+		SolicitudPago solicitudPago = new SolicitudPago();
+		String datosJson = String.valueOf(authentication.getPrincipal());
+		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
+		
+		try {
+			return providerRestTemplate.consumirServicio(solicitudPago.listaVelatorios(busqueda).getDatos(), urlDominio + CONSULTA, authentication);
+		} catch (Exception e) {
+		    log.error(e.getMessage());
+       	    logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+		    return null;
+	    }
+		
+	}
+
+	@Override
+	public Response<Object> listaUnidadesOpe(DatosRequest request, Authentication authentication) throws IOException {
+		
+		try {
+			return providerRestTemplate.consumirServicio(new SolicitudPago().listaUnidadesOpe().getDatos(), urlDominio + CONSULTA, authentication);
+		} catch (Exception e) {
+		    log.error(e.getMessage());
+       	    logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+		    return null;
+	    }
+		
+	}
+	
+	@Override
+	public Response<Object> listaDatosBanco(DatosRequest request, Authentication authentication) throws IOException {
+		
+		try {
+			return providerRestTemplate.consumirServicio(new SolicitudPago().listaDatosBanco().getDatos(), urlDominio + CONSULTA, authentication);
+		} catch (Exception e) {
+		    log.error(e.getMessage());
+       	    logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+		    return null;
+	    }
+		
+	}
+	
+	@Override
+	public Response<Object> agregarSoli(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
@@ -259,7 +298,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		SolicitudPago solicitudPago = new SolicitudPago();
 		
 		try {
-			return providerRestTemplate.consumirServicio(solicitudPago.aceptarSolicitud(cambioEstatus).getDatos(), urlDominio + ACTUALIZAR, authentication);
+			return providerRestTemplate.consumirServicio(solicitudPago.aprobarSolicitud(cambioEstatus).getDatos(), urlDominio + ACTUALIZAR, authentication);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
