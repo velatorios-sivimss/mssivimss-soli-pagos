@@ -100,9 +100,10 @@ public class SolicitudPago {
 	}
 	
 	public DatosRequest detalle(DatosRequest request, String formatoFecha) throws UnsupportedEncodingException {
-		StringBuilder query = new StringBuilder("SELECT VEL.DES_VELATORIO AS desVelatorio, SP.CVE_FOLIO_GASTOS AS cveFolioGastos, SP.CVE_FOLIO_CONSIGNADOS AS cveFolioConsignados, \n");
-		query.append("SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, SP.ID_UNIDAD_OPERATIVA AS unidadOperativa, DATE_FORMAT(SP.FEC_ALTA,'" + formatoFecha + "') AS fecElaboracion, \n");
-	    query.append("SP.ID_TIPO_SOLICITUD AS idTipoSolicitid, TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud, \n");
+		StringBuilder query = new StringBuilder("SELECT SP.ID_TIPO_SOLICITUD AS idTipoSolicitud, SP.ID_VELATORIO AS idVelatorio, VEL.DES_VELATORIO AS desVelatorio, \n");
+		query.append("SP.CVE_FOLIO_GASTOS AS cveFolioGastos, SP.CVE_FOLIO_CONSIGNADOS AS cveFolioConsignados, SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, \n");
+	    query.append("SP.ID_UNIDAD_OPERATIVA AS idUnidadOperativa, SP.ID_TIPO_SOLICITUD AS idTipoSolicitid, TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud, \n");
+		query.append("DATE_FORMAT(SP.FEC_ALTA,'" + formatoFecha + "') AS fecElaboracion, ID_SOLICITUD_PAGO AS idSolicitud, \n");
 		query.append("CONCAT(PER.NOM_PERSONA,' ',PER.NOM_PRIMER_APELLIDO,' ',PER.NOM_SEGUNDO_APELLIDO) AS nomBeneficiario, \n");
 		query.append("SP.ID_ESTATUS_SOLICITUD AS idEstatusSol, EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud \n");
 		query.append("FROM SVT_SOLICITUD_PAGO SP \n");
@@ -120,7 +121,7 @@ public class SolicitudPago {
 	
 	public DatosRequest factura(DatosRequest request) throws UnsupportedEncodingException {
 		StringBuilder query = new StringBuilder("SELECT PARTIDA_PRES AS partidaPres, CUENTA_CONTABLE AS cuentaContable, ");
-		query.append("IMP_TOTAL AS importeTotal FROM SVC_FACTURA WHERE CVE_FOLIO_FISCAL = '" + this.folioFiscal + "' ");
+		query.append("	 AS importeTotal FROM SVC_FACTURA WHERE CVE_FOLIO_FISCAL = '" + this.folioFiscal + "' ");
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
@@ -160,7 +161,7 @@ public class SolicitudPago {
 	public DatosRequest listaDatosBanco() throws UnsupportedEncodingException {
     	DatosRequest request = new DatosRequest();
     	Map<String, Object> parametro = new HashMap<>();
-    	StringBuilder query = new StringBuilder("SELECT DES_BANCO AS banco, CVE_BANCARIA AS cveBancaria, '' AS cuenta ");
+    	StringBuilder query = new StringBuilder("SELECT NOM_PROVEEDOR AS nomProveedor, DES_BANCO AS banco, CVE_BANCARIA AS cveBancaria, '' AS cuenta ");
     	query.append("FROM SVT_PROVEEDOR");
     	
     	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
