@@ -271,11 +271,11 @@ public class SolicitudPago {
 		envioDatos.put("dirTecnica", "Dra. Cristinne Leo Martel");
 		envioDatos.put("cargo", "Directora Técnica del Fideicomiso de Beneficios Sociales (FIBESO)");
 		envioDatos.put("refUnOpAd", reporteDto.getReferenciaUnidad());
-		envioDatos.put("refDirTecnica", reporteDto.getRefDirTec());
+		envioDatos.put("refDirTec", reporteDto.getRefDirTec().toString());
 		envioDatos.put("beneficiario", reporteDto.getBeneficiario());
 		envioDatos.put("concepto", reporteDto.getConcepto());
 		envioDatos.put("fecElaboracion", reporteDto.getFechaElabora());
-		envioDatos.put("importe", reporteDto.getImporte()); 
+		envioDatos.put("importe", reporteDto.getImporte().toString()); 
 		envioDatos.put("canletra", reporteDto.cantidadLetra);
 		envioDatos.put("datBancarios", reporteDto.datosBancarios);
 		envioDatos.put("solictado", " ");

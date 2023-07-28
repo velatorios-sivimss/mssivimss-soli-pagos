@@ -292,7 +292,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		DatosFormatoDto reporteDto = gson.fromJson(datosJson, DatosFormatoDto.class);
 		if (reporteDto.getIdSolicitud() == null || reporteDto.getIdTipoSolicitud() == null) {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
-		} else if ((reporteDto.getIdVelatorio() == null && reporteDto.idUnidadOperativa == null) || reporteDto.getIdTipoSolicitud() > 4) {
+		} else if ((reporteDto.getIdVelatorio() == null && reporteDto.idUnidadOperativa == null) || reporteDto.getIdTipoSolicitud() > 6) {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion no valida");
 		}
 		
