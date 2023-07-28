@@ -292,11 +292,26 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		DatosFormatoDto reporteDto = gson.fromJson(datosJson, DatosFormatoDto.class);
 		if (reporteDto.getIdSolicitud() == null || reporteDto.getIdTipoSolicitud() == null) {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
-		} else if ((reporteDto.getIdVelatorio() == null && reporteDto.idUnidadOperativa == null) || reporteDto.getIdTipoSolicitud() > 6) {
+		} else if ((reporteDto.getIdVelatorio() == null && reporteDto.idUnidadOperativa == null) || reporteDto.getIdTipoSolicitud() > 4) {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion no valida");
 		}
 		
-		Map<String, Object> envioDatos = new SolicitudPago().generarFormato(reporteDto, NOMBREPDFFORMATOS[reporteDto.getIdTipoSolicitud()-1]);
+		SolicitudPago solicitudPago = new SolicitudPago();
+		Response<?> response1 = providerRestTemplate.consumirServicio(solicitudPago.datosFormato(request, reporteDto, formatoFecha).getDatos(), urlDominio + CONSULTA, 
+				authentication);
+		ArrayList<LinkedHashMap> datos1 = (ArrayList) response1.getDatos();
+		if (datos1.size() > 0) {
+			reporteDto.setUnidadAdmOpe(datos1.get(0).get("unidadAdmOpe").toString());
+			reporteDto.setReferenciaUnidad(datos1.get(0).get("referenciaUnidad").toString());
+			reporteDto.setRefDirTec(Integer.valueOf(datos1.get(0).get("refDirTec").toString()));
+			reporteDto.setBeneficiario(datos1.get(0).get("beneficiario").toString());
+			reporteDto.setConcepto(datos1.get(0).get("concepto").toString());
+			reporteDto.setFechaElabora(datos1.get(0).get("fechaElabora").toString());
+			reporteDto.setImporte(Double.valueOf(datos1.get(0).get("importe").toString()));
+			reporteDto.setDatosBancarios(datos1.get(0).get("datosBancarios").toString());
+		}
+		
+		Map<String, Object> envioDatos = solicitudPago.generarFormato(reporteDto, NOMBREPDFFORMATOS[reporteDto.getIdTipoSolicitud()-1]);
 		Response<Object> response =  providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 		return MensajeResponseUtil.mensajeConsultaResponse(response, ERROR_DESCARGA);
 	}
