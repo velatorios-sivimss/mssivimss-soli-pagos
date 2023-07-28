@@ -18,13 +18,15 @@ public class SolicitudPagoDto {
 	private String nomDestinatario;
 	private String nomRemitente;
 	private Integer numReferencia;
-	private Integer idContratBenef;
+	private Integer idProveedor;
+	private String fechaElabora;
 	private String fechaInicial;
 	private String fechaFinal;
 	private String concepto;
 	private String observaciones;
 	private Integer idVelatorio;
 	private Integer ejercicioFiscal;
+	private Double impTotal;
 	private Integer idEstatusSol;
 
 }
