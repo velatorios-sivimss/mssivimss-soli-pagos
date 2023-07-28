@@ -20,6 +20,7 @@ import com.imss.sivimss.solipagos.util.LogUtil;
 import com.imss.sivimss.solipagos.util.ProviderServiceRestTemplate;
 import com.google.gson.Gson;
 import com.imss.sivimss.solipagos.model.request.BusquedaDto;
+import com.imss.sivimss.solipagos.model.request.DatosFormatoDto;
 import com.imss.sivimss.solipagos.model.request.SolicitudPagoDto;
 import com.imss.sivimss.solipagos.util.AppConstantes;
 import com.imss.sivimss.solipagos.exception.BadRequestException;
@@ -62,6 +63,13 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 	private static final String FOLIOFISCALNOEXISTE = "143";
 	
     private static final String NOMBREPDFREPORTE = "reportes/generales/ReporteSolicitudPagos.jrxml";
+    
+    private static final String[] NOMBREPDFFORMATOS = {"reportes/generales/FormatoSolicitudBienesServ.jrxml",
+    		                                           "reportes/generales/FormatoSolicitudComprobacion.jrxml",
+    		                                           "reportes/generales/FormatoSolicitudReembolsoFondoFijo.jrxml",
+    		                                           "reportes/generales/FormatoSolicitudPago.jrxml",
+    		                                           "reportes/generales/FormatoSolicitudPagoConsignante.jrxml",
+    		                                           "reportes/generales/FormatoSolicitudPagoContrato.jrxml"};
 	
 	@Autowired
 	private LogUtil logUtil;
@@ -128,7 +136,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		Response<Object> response = null;
 		
 		try {
-		    response = providerRestTemplate.consumirServicio(solicitudPago.consulta(request, busqueda, formatoFecha).getDatos(), urlDominio + CONSULTA, authentication);
+		    response = providerRestTemplate.consumirServicio(solicitudPago.consulta(request, busqueda, formatoFecha).getDatos(), urlDominio + PAGINADO, authentication);
 		} catch (Exception e) {
         	log.error(e.getMessage());
         	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
@@ -278,8 +286,19 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 	
 	@Override
 	public Response<Object> generarPdf(DatosRequest request, Authentication authentication) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		Gson gson = new Gson();
+		
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		DatosFormatoDto reporteDto = gson.fromJson(datosJson, DatosFormatoDto.class);
+		if (reporteDto.getIdSolicitud() == null || reporteDto.getIdTipoSolicitud() == null) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
+		} else if ((reporteDto.getIdVelatorio() == null && reporteDto.idUnidadOperativa == null) || reporteDto.getIdTipoSolicitud() > 6) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion no valida");
+		}
+		
+		Map<String, Object> envioDatos = new SolicitudPago().generarFormato(reporteDto, NOMBREPDFFORMATOS[reporteDto.getIdTipoSolicitud()-1]);
+		Response<Object> response =  providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
+		return MensajeResponseUtil.mensajeConsultaResponse(response, ERROR_DESCARGA);
 	}
 
 	@Override
