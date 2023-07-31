@@ -125,6 +125,25 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		
 		return response;
 	}
+	
+	@Override
+	public Response<Object> buscaFolios(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+		SolicitudPago solicitudPago = new SolicitudPago();
+		
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
+		Response<Object> response = null;
+		try {
+		    response = providerRestTemplate.consumirServicio(solicitudPago.buscaFolios(busqueda.getFolioSolicitud()).getDatos(), urlDominio + CONSULTA, authentication);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+        	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			return null;
+        }
+		    
+		return response;
+	}
 
 	@Override
 	public Response<Object> consulta(DatosRequest request, Authentication authentication) throws IOException {
@@ -205,10 +224,9 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
 		}
 		SolicitudPago solicitudPago = new SolicitudPago();
-		solicitudPago.setFolioFiscal(solicitudPagoDto.getCveFolioGastos());
 		Response<Object> response = null;
 		try {
-			response = providerRestTemplate.consumirServicio(solicitudPago.factura(request).getDatos(), urlDominio + CONSULTA, authentication);
+			response = providerRestTemplate.consumirServicio(solicitudPago.factura(request, solicitudPagoDto.getCveFolioGastos()).getDatos(), urlDominio + CONSULTA, authentication);
 			ArrayList datos1 = (ArrayList) response.getDatos();
 			if (datos1.isEmpty()) {
 				response.setMensaje(FOLIOFISCALNOEXISTE);
@@ -305,6 +323,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 			reporteDto.setReferenciaUnidad(datos1.get(0).get("referenciaUnidad").toString());
 			reporteDto.setRefDirTec(Integer.valueOf(datos1.get(0).get("refDirTec").toString()));
 			reporteDto.setBeneficiario(datos1.get(0).get("beneficiario")==null?"":datos1.get(0).get("beneficiario").toString());
+			reporteDto.setRemitente(datos1.get(0).get("remitente")==null?"":datos1.get(0).get("remitente").toString());
 			reporteDto.setNumContrato(datos1.get(0).get("numContrato")==null?"":datos1.get(0).get("numContrato").toString());
 			reporteDto.setConcepto(datos1.get(0).get("concepto")==null?"":datos1.get(0).get("concepto").toString());
 			reporteDto.setFechaElabora(datos1.get(0).get("fechaElabora").toString());

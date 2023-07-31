@@ -18,6 +18,7 @@ public class DatosFormatoDto {
 	public String referenciaUnidad;
     public Integer refDirTec;
     public String beneficiario;
+    public String remitente;
     public String numContrato;
     public String concepto;
     public String fechaElabora;

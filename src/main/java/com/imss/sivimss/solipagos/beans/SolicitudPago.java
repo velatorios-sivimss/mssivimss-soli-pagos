@@ -29,7 +29,6 @@ public class SolicitudPago {
 	
 	private Integer id;
 	private Integer idUsuarioAlta;
-	private String folioFiscal;
 	
 	private static final Integer NIVEL_DELEGACION = 2;
 	private static final Integer NIVEL_VELATORIO = 3;
@@ -50,6 +49,19 @@ public class SolicitudPago {
     	Map<String, Object> parametro = new HashMap<>();
     	StringBuilder query = new StringBuilder("SELECT ID_TIPO_SOLICITUD AS tipoSolicitud, DES_TIPO_SOLICITUD AS desTipoSolicitud ");
     	query.append("FROM SVC_TIPO_SOLICITUD_PAGO ");
+    	
+    	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+		return request;
+	}
+	
+	public DatosRequest buscaFolios(String folioSolicitud) throws UnsupportedEncodingException {
+    	DatosRequest request = new DatosRequest();
+    	Map<String, Object> parametro = new HashMap<>();
+    	StringBuilder query = new StringBuilder("SELECT NULLIF(CVE_FOLIO_GASTOS,CVE_FOLIO_CONSIGNADOS) AS cveFolio ");
+    	query.append("FROM SVT_SOLICITUD_PAGO WHERE CVE_FOLIO_GASTOS LIKE '%" + folioSolicitud + "%' ");
+    	query.append("OR CVE_FOLIO_CONSIGNADOS LIKE '%" + folioSolicitud + "%' ");
     	
     	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		parametro.put(AppConstantes.QUERY, encoded);
@@ -119,9 +131,9 @@ public class SolicitudPago {
 		return request;
 	}
 	
-	public DatosRequest factura(DatosRequest request) throws UnsupportedEncodingException {
+	public DatosRequest factura(DatosRequest request, String folioFiscal) throws UnsupportedEncodingException {
 		StringBuilder query = new StringBuilder("SELECT PARTIDA_PRES AS partidaPres, CUENTA_CONTABLE AS cuentaContable, ");
-		query.append("	 AS importeTotal FROM SVC_FACTURA WHERE CVE_FOLIO_FISCAL = '" + this.folioFiscal + "' ");
+		query.append("	 AS importeTotal FROM SVC_FACTURA WHERE CVE_FOLIO_FISCAL = '" + folioFiscal + "' ");
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
@@ -245,7 +257,7 @@ public class SolicitudPago {
 		if (reporteDto.idUnidadOperativa != null) {
 		    query.append("SELECT sfb.NOM_SUBDIRECCION AS unidadAdmOpe, sfb.DES_REFERENCIA AS referenciaUnidad, sp.NUM_REFERENCIA_DT AS refDirTec, \n");
 		    query.append("prv.NOM_PROVEEDOR AS beneficiario, sp.DES_CONCEPTO AS concepto, sp.DES_OBSERVACIONES AS observaciones, con.NUM_CONTRATO AS numContrato, \n");
-		    query.append("DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, \n");
+		    query.append("DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, sp.DES_NOMBRE_REMITENTE AS remitente, \n");
 		    query.append("CONCAT('DEL: ',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "'),' AL ',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "')) AS periodo, \n ");
 		    query.append("sp.IMP_TOTAL AS importe, CONCAT(prv.DES_BANCO,' ',prv.CVE_BANCARIA,' ') AS datosBancarios \n");
 		    query.append("FROM SVT_SOLICITUD_PAGO sp \n");
@@ -256,7 +268,7 @@ public class SolicitudPago {
 		} else {
 			query.append("SELECT vel.DES_VELATORIO AS unidadAdmOpe, vel.DES_VELATORIO AS referenciaUnidad, sp.NUM_REFERENCIA_DT AS refDirTec, \n");
 			query.append("prv.NOM_PROVEEDOR AS beneficiario, sp.DES_CONCEPTO AS concepto, sp.DES_OBSERVACIONES AS observaciones, con.NUM_CONTRATO AS numContrato, \n");
-		    query.append("DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, \n");
+		    query.append("DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, sp.DES_NOMBRE_REMITENTE AS remitente, \n");
 		    query.append("CONCAT('DEL: ',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "'),' AL',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "')) AS periodo, \n ");
 		    query.append("sp.IMP_TOTAL AS importe, CONCAT(prv.DES_BANCO,' ',prv.CVE_BANCARIA,' ') AS datosBancarios \n");
 		    query.append("FROM SVT_SOLICITUD_PAGO sp \n");
@@ -276,7 +288,7 @@ public class SolicitudPago {
 		
 		envioDatos.put("unOpAd", reporteDto.getUnidadAdmOpe());
 		envioDatos.put("dirTecnica", "Dra. Cristinne Leo Martel");
-		envioDatos.put("cargo", "Directora Técnica del Fideicomiso de Beneficios Sociales (FIBESO)");
+		envioDatos.put("cargo", reporteDto.getRemitente());
 		envioDatos.put("refUnOpAd", reporteDto.getReferenciaUnidad());
 		envioDatos.put("refDirTec", reporteDto.getRefDirTec().toString());
 		envioDatos.put("beneficiario", reporteDto.getBeneficiario());
