@@ -13,6 +13,8 @@ public interface SoliPagosService {
 	
 	Response<Object> listaTiposSoli(DatosRequest request, Authentication authentication) throws IOException;
 	
+	Response<Object> buscaFolios(DatosRequest request, Authentication authentication) throws IOException;
+	
 	Response<Object> consulta(DatosRequest request, Authentication authentication) throws IOException;
 	
 	Response<Object> busqueda(DatosRequest request, Authentication authentication) throws IOException;

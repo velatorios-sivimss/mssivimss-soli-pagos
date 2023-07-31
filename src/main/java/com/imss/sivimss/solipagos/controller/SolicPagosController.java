@@ -61,6 +61,18 @@ public class SolicPagosController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
+	@PostMapping("/busca-folios")
+	public CompletableFuture<Object> buscaFolios(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+		
+		Response<?> response = soliPagosService.buscaFolios(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+
+	}
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
 	@PostMapping("/consulta")
 	public CompletableFuture<Object> consulta(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
 		
