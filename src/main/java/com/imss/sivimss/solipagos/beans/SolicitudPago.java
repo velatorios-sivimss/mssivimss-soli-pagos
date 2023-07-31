@@ -162,7 +162,7 @@ public class SolicitudPago {
     	DatosRequest request = new DatosRequest();
     	Map<String, Object> parametro = new HashMap<>();
     	StringBuilder query = new StringBuilder("SELECT PRV.ID_PROVEEDOR AS idProveedor, NOM_PROVEEDOR AS nomProveedor, ");
-    	query.append("DES_BANCO AS banco, CVE_BANCARIA AS cveBancaria, '123456789' AS cuenta , NUM_CONTRATO AS numeroContrato ");
+    	query.append("DES_BANCO AS banco, CVE_BANCARIA AS cveBancaria, ' ' AS cuenta , NUM_CONTRATO AS numeroContrato ");
     	query.append("FROM SVT_PROVEEDOR PRV JOIN SVT_CONTRATO CON ON CON.ID_PROVEEDOR = PRV.ID_PROVEEDOR ");
     	
     	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
