@@ -18,11 +18,14 @@ public class DatosFormatoDto {
 	public String referenciaUnidad;
     public Integer refDirTec;
     public String beneficiario;
+    public String numContrato;
     public String concepto;
     public String fechaElabora;
+    public String periodo;
     public Double importe;
 	public String cantidadLetra;
 	public String datosBancarios;
+	public String observaciones;
 	public String tipoReporte;
 	
 }

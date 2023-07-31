@@ -161,8 +161,9 @@ public class SolicitudPago {
 	public DatosRequest listaDatosBanco() throws UnsupportedEncodingException {
     	DatosRequest request = new DatosRequest();
     	Map<String, Object> parametro = new HashMap<>();
-    	StringBuilder query = new StringBuilder("SELECT ID_PROVEEDOR AS idProveedor, NOM_PROVEEDOR AS nomProveedor, ");
-    	query.append("DES_BANCO AS banco, CVE_BANCARIA AS cveBancaria, '' AS cuenta FROM SVT_PROVEEDOR");
+    	StringBuilder query = new StringBuilder("SELECT PRV.ID_PROVEEDOR AS idProveedor, NOM_PROVEEDOR AS nomProveedor, ");
+    	query.append("DES_BANCO AS banco, CVE_BANCARIA AS cveBancaria, '123456789' AS cuenta , NUM_CONTRATO AS numeroContrato ");
+    	query.append("FROM SVT_PROVEEDOR PRV JOIN SVT_CONTRATO CON ON CON.ID_PROVEEDOR = PRV.ID_PROVEEDOR ");
     	
     	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		parametro.put(AppConstantes.QUERY, encoded);
@@ -243,19 +244,25 @@ public class SolicitudPago {
 		StringBuilder query = new StringBuilder("");
 		if (reporteDto.idUnidadOperativa != null) {
 		    query.append("SELECT sfb.NOM_SUBDIRECCION AS unidadAdmOpe, sfb.DES_REFERENCIA AS referenciaUnidad, sp.NUM_REFERENCIA_DT AS refDirTec, \n");
-		    query.append("prv.NOM_PROVEEDOR AS beneficiario, sp.DES_CONCEPTO AS concepto, DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, \n");
+		    query.append("prv.NOM_PROVEEDOR AS beneficiario, sp.DES_CONCEPTO AS concepto, sp.DES_OBSERVACIONES AS observaciones, con.NUM_CONTRATO AS numContrato, \n");
+		    query.append("DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, \n");
+		    query.append("CONCAT('DEL: ',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "'),' AL ',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "')) AS periodo, \n ");
 		    query.append("sp.IMP_TOTAL AS importe, CONCAT(prv.DES_BANCO,' ',prv.CVE_BANCARIA,' ') AS datosBancarios \n");
 		    query.append("FROM SVT_SOLICITUD_PAGO sp \n");
 		    query.append("JOIN SVT_SUBDIRECCION_FIBESO sfb ON sfb.ID_SUBDIRECCION = sp.ID_UNIDAD_OPERATIVA \n");
 		    query.append("JOIN SVT_PROVEEDOR prv ON prv.ID_PROVEEDOR = sp.ID_PROVEEDOR ");
+		    query.append("JOIN SVT_CONTRATO con ON con.ID_PROVEEDOR = prv.ID_PROVEEDOR ");
 		    query.append("WHERE sp.ID_SOLICITUD_PAGO = " + reporteDto.getIdSolicitud());
 		} else {
 			query.append("SELECT vel.DES_VELATORIO AS unidadAdmOpe, vel.DES_VELATORIO AS referenciaUnidad, sp.NUM_REFERENCIA_DT AS refDirTec, \n");
-			query.append("prv.NOM_PROVEEDOR AS beneficiario, sp.DES_CONCEPTO AS concepto, DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, \n");
+			query.append("prv.NOM_PROVEEDOR AS beneficiario, sp.DES_CONCEPTO AS concepto, sp.DES_OBSERVACIONES AS observaciones, con.NUM_CONTRATO AS numContrato, \n");
+		    query.append("DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, \n");
+		    query.append("CONCAT('DEL: ',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "'),' AL',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "')) AS periodo, \n ");
 		    query.append("sp.IMP_TOTAL AS importe, CONCAT(prv.DES_BANCO,' ',prv.CVE_BANCARIA,' ') AS datosBancarios \n");
 		    query.append("FROM SVT_SOLICITUD_PAGO sp \n");
 			query.append("JOIN SVC_VELATORIO vel ON vel.ID_VELATORIO = sp.ID_VELATORIO \n");
 			query.append("JOIN SVT_PROVEEDOR prv ON prv.ID_PROVEEDOR = sp.ID_PROVEEDOR ");
+			query.append("JOIN SVT_CONTRATO con ON con.ID_PROVEEDOR = prv.ID_PROVEEDOR ");
 			query.append("WHERE sp.ID_SOLICITUD_PAGO = " + reporteDto.getIdSolicitud());
 		}
 		
@@ -273,12 +280,19 @@ public class SolicitudPago {
 		envioDatos.put("refUnOpAd", reporteDto.getReferenciaUnidad());
 		envioDatos.put("refDirTec", reporteDto.getRefDirTec().toString());
 		envioDatos.put("beneficiario", reporteDto.getBeneficiario());
+		if (reporteDto.getIdTipoSolicitud() == 5 || reporteDto.getIdTipoSolicitud() == 6) {
+			envioDatos.put("numContrato", reporteDto.getNumContrato());
+		}
 		envioDatos.put("concepto", reporteDto.getConcepto());
 		envioDatos.put("fecElaboracion", reporteDto.getFechaElabora());
+		if (reporteDto.getIdTipoSolicitud() == 3 || reporteDto.getIdTipoSolicitud() == 5) {
+			envioDatos.put("periodo", reporteDto.getPeriodo());
+		}
 		envioDatos.put("importe", reporteDto.getImporte().toString()); 
-		envioDatos.put("canletra", reporteDto.cantidadLetra);
+		envioDatos.put("canLetra", reporteDto.cantidadLetra);
 		envioDatos.put("datBancarios", reporteDto.datosBancarios);
-		envioDatos.put("solictado", " ");
+		envioDatos.put("observaciones", reporteDto.getObservaciones());
+		envioDatos.put("solicitado", " ");
 		envioDatos.put("subAdmin", "Lic. Armando Julio Mosco Neria");
 		envioDatos.put("subComer", "Lic. Ana Cecilia Victoria Ochoa");
 		envioDatos.put("subFinanzas", "C.P. Cesar Omar Carranza Martínez");
