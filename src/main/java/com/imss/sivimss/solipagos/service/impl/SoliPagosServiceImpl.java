@@ -68,8 +68,8 @@ public class SoliPagosServiceImpl implements SoliPagosService {
     		                                           "reportes/generales/FormatoSolicitudComprobacion.jrxml",
     		                                           "reportes/generales/FormatoSolicitudReembolsoFondoFijo.jrxml",
     		                                           "reportes/generales/FormatoSolicitudPago.jrxml",
-    		                                           "reportes/generales/FormatoSolicitudPagoConsignante.jrxml",
-    		                                           "reportes/generales/FormatoSolicitudPagoContrato.jrxml"};
+    		                                           "reportes/generales/FormatoSolicitudPagoConsignantes.jrxml",
+    		                                           "reportes/generales/FormatoSolicitudPagoXContrato.jrxml"};
 	
 	@Autowired
 	private LogUtil logUtil;
@@ -296,7 +296,25 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion no valida");
 		}
 		
-		Map<String, Object> envioDatos = new SolicitudPago().generarFormato(reporteDto, NOMBREPDFFORMATOS[reporteDto.getIdTipoSolicitud()-1]);
+		SolicitudPago solicitudPago = new SolicitudPago();
+		Response<?> response1 = providerRestTemplate.consumirServicio(solicitudPago.datosFormato(request, reporteDto, formatoFecha).getDatos(), urlDominio + CONSULTA, 
+				authentication);
+		ArrayList<LinkedHashMap> datos1 = (ArrayList) response1.getDatos();
+		if (datos1.size() > 0) {
+			reporteDto.setUnidadAdmOpe(datos1.get(0).get("unidadAdmOpe").toString());
+			reporteDto.setReferenciaUnidad(datos1.get(0).get("referenciaUnidad").toString());
+			reporteDto.setRefDirTec(Integer.valueOf(datos1.get(0).get("refDirTec").toString()));
+			reporteDto.setBeneficiario(datos1.get(0).get("beneficiario")==null?"":datos1.get(0).get("beneficiario").toString());
+			reporteDto.setNumContrato(datos1.get(0).get("numContrato")==null?"":datos1.get(0).get("numContrato").toString());
+			reporteDto.setConcepto(datos1.get(0).get("concepto")==null?"":datos1.get(0).get("concepto").toString());
+			reporteDto.setFechaElabora(datos1.get(0).get("fechaElabora").toString());
+			reporteDto.setPeriodo(datos1.get(0).get("periodo")==null?"":datos1.get(0).get("periodo").toString());
+			reporteDto.setImporte(Double.valueOf(datos1.get(0).get("importe").toString()));
+			reporteDto.setDatosBancarios(datos1.get(0).get("datosBancarios")==null?"":datos1.get(0).get("datosBancarios").toString());
+			reporteDto.setObservaciones(datos1.get(0).get("observaciones")==null?"":datos1.get(0).get("observaciones").toString());
+		}
+		
+		Map<String, Object> envioDatos = solicitudPago.generarFormato(reporteDto, NOMBREPDFFORMATOS[reporteDto.getIdTipoSolicitud()-1]);
 		Response<Object> response =  providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 		return MensajeResponseUtil.mensajeConsultaResponse(response, ERROR_DESCARGA);
 	}
