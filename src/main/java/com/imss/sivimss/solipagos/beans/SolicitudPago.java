@@ -132,8 +132,8 @@ public class SolicitudPago {
 	}
 	
 	public DatosRequest factura(DatosRequest request, String folioFiscal) throws UnsupportedEncodingException {
-		StringBuilder query = new StringBuilder("SELECT PARTIDA_PRES AS partidaPres, CUENTA_CONTABLE AS cuentaContable, ");
-		query.append("	 AS importeTotal FROM SVC_FACTURA WHERE CVE_FOLIO_FISCAL = '" + folioFiscal + "' ");
+		StringBuilder query = new StringBuilder("SELECT IFNULL(PARTIDA_PRES,'') AS partidaPres, CUENTA_CONTABLE AS cuentaContable, ");
+		query.append("IMP_TOTAL AS importeTotal FROM SVC_FACTURA WHERE CVE_FOLIO_FISCAL = '" + folioFiscal + "' ");
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
