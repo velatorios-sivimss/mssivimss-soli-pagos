@@ -113,7 +113,7 @@ public class SolicitudPago {
 	}
 	
 	public DatosRequest detalle(DatosRequest request, String formatoFecha) throws UnsupportedEncodingException {
-		StringBuilder query = new StringBuilder("SELECT ID_SOLICITUD_PAGO AS idSolicitud, PRV.ID_PROVEEDOR AS idProveedor, \n");
+		StringBuilder query = new StringBuilder("SELECT ID_SOLICITUD_PAGO AS idSolicitud, PRV.ID_PROVEEDOR AS idProveedor, SP.DES_BENEFICIARIO AS beneficiario, \n");
 		query.append("SP.ID_TIPO_SOLICITUD AS idTipoSolicitud, SP.ID_VELATORIO AS idVelatorio, VEL.DES_VELATORIO AS desVelatorio, \n");
 		query.append("SP.CVE_FOLIO_GASTOS AS cveFolioGastos, SP.CVE_FOLIO_CONSIGNADOS AS cveFolioConsignados, SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, \n");
 	    query.append("SP.ID_UNIDAD_OPERATIVA AS idUnidadOperativa, SP.ID_TIPO_SOLICITUD AS idTipoSolicitid, TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud, \n");
@@ -195,7 +195,8 @@ public class SolicitudPago {
 		q.agregarParametroValues("DES_NOMBRE_REMITENTE", setValor(solicPagoDto.getNomRemitente()));
 		q.agregarParametroValues("NUM_REFERENCIA_DT", "" + solicPagoDto.getNumReferencia());
 		q.agregarParametroValues("ID_PROVEEDOR", "" + solicPagoDto.getIdProveedor());
-		q.agregarParametroValues("FEC_ELABORACION ", "STR_TO_DATE(" + setValor(solicPagoDto.getFechaElabora()) + ",'" + formatoFecha + "')");
+		q.agregarParametroValues("DES_BENEFICIARIO", setValor(solicPagoDto.getBeneficiario()));
+		q.agregarParametroValues("FEC_ELABORACION", "STR_TO_DATE(" + setValor(solicPagoDto.getFechaElabora()) + ",'" + formatoFecha + "')");
 		q.agregarParametroValues("FEC_INICIAL", "STR_TO_DATE(" + setValor(solicPagoDto.getFechaInicial()) + ",'" + formatoFecha + "')");
 		q.agregarParametroValues("FEC_FINAL", "STR_TO_DATE(" + setValor(solicPagoDto.getFechaFinal()) + ",'" + formatoFecha + "')");
 		q.agregarParametroValues("DES_CONCEPTO", setValor(solicPagoDto.getConcepto()));
