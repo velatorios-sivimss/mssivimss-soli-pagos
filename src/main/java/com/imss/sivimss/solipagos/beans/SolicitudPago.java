@@ -116,7 +116,7 @@ public class SolicitudPago {
 		StringBuilder query = new StringBuilder("SELECT ID_SOLICITUD_PAGO AS idSolicitud, PRV.ID_PROVEEDOR AS idProveedor, SP.DES_BENEFICIARIO AS beneficiario, \n");
 		query.append("SP.ID_TIPO_SOLICITUD AS idTipoSolicitud, SP.ID_VELATORIO AS idVelatorio, VEL.DES_VELATORIO AS desVelatorio, \n");
 		query.append("SP.CVE_FOLIO_GASTOS AS cveFolioGastos, SP.CVE_FOLIO_CONSIGNADOS AS cveFolioConsignados, SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, \n");
-	    query.append("SP.ID_UNIDAD_OPERATIVA AS idUnidadOperativa, SP.ID_TIPO_SOLICITUD AS idTipoSolicitid, TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud, \n");
+	    query.append("SP.ID_UNIDAD_OPERATIVA AS idUnidadOperativa, SP.ID_TIPO_SOLICITUD AS idTipoSolicitud, TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud, \n");
 		query.append("DATE_FORMAT(SP.FEC_ELABORACION,'" + formatoFecha + "') AS fecElabora, PRV.NOM_PROVEEDOR AS nomBeneficiario, \n");
 		query.append("SP.ID_ESTATUS_SOLICITUD AS idEstatusSol, EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud, SP.IMP_TOTAL AS impTotal \n");
 		query.append("FROM SVT_SOLICITUD_PAGO SP \n");
@@ -347,12 +347,13 @@ public class SolicitudPago {
 		StringBuilder query = new StringBuilder("SELECT SP.ID_SOLICITUD_PAGO AS idSolicitud, VEL.DES_VELATORIO AS desVelatorio, NULLIF(SP.CVE_FOLIO_GASTOS,SP.CVE_FOLIO_CONSIGNADOS) AS cveFolio, \n");
 		query.append("SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, DATE_FORMAT(SP.FEC_ELABORACION,'" + formatoFecha + "') AS fecElaboracion, \n");
 	    query.append("SP.ID_TIPO_SOLICITUD AS idTipoSolicitid, TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud, PRV.ID_PROVEEDOR AS idProveedor, \n");
+	    query.append("IFNULL(PRV.NOM_PROVEEDOR,SP.DES_BENEFICIARIO) AS nomBeneficiario, \n");
 		query.append("SP.ID_ESTATUS_SOLICITUD AS idEstatus, EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud, \n");
 		query.append("SP.DES_MOTIVO_CANCELACION AS motCancelacion, SP.DES_MOTIVO_RECHAZO AS motRechazo ");
 		query.append("FROM SVT_SOLICITUD_PAGO SP \n");
 		query.append("JOIN SVC_VELATORIO VEL ON VEL.ID_VELATORIO = SP.ID_VELATORIO \n");
 		query.append("JOIN SVC_TIPO_SOLICITUD_PAGO TIP ON TIP.ID_TIPO_SOLICITUD = SP.ID_TIPO_SOLICITUD \n");
-		query.append("JOIN SVT_PROVEEDOR PRV ON PRV.ID_PROVEEDOR = SP.ID_PROVEEDOR \n");
+		query.append("LEFT JOIN SVT_PROVEEDOR PRV ON PRV.ID_PROVEEDOR = SP.ID_PROVEEDOR \n");
 		query.append("JOIN SVC_ESTATUS_SOLICITUD_PAGO EST ON EST.ID_ESTATUS_SOLICITUD = SP.ID_ESTATUS_SOLICITUD \n");
 		query.append("WHERE 1 = 1 ");
 		
