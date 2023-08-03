@@ -21,6 +21,8 @@ public interface SoliPagosService {
 	
 	Response<Object> detalle(DatosRequest request, Authentication authentication) throws IOException;
 	
+	Response<Object> detFolios(DatosRequest request, Authentication authentication) throws IOException;
+	
 	Response<Object> factura(DatosRequest request, Authentication authentication) throws IOException;
 	
 	Response<Object> listaVelatorios(DatosRequest request, Authentication authentication) throws IOException;
@@ -30,6 +32,8 @@ public interface SoliPagosService {
 	Response<Object> listaDatosBanco(DatosRequest request, Authentication authentication) throws IOException;
 	
 	Response<Object> agregarSoli(DatosRequest request, Authentication authentication) throws IOException;
+	
+	Response<Object> agregarFolios(DatosRequest request, Authentication authentication) throws IOException;
 	
 	Response<Object> generarPdf(DatosRequest request, Authentication authentication) throws IOException;
 	

@@ -21,6 +21,7 @@ import com.imss.sivimss.solipagos.util.ProviderServiceRestTemplate;
 import com.google.gson.Gson;
 import com.imss.sivimss.solipagos.model.request.BusquedaDto;
 import com.imss.sivimss.solipagos.model.request.DatosFormatoDto;
+import com.imss.sivimss.solipagos.model.request.SolicitudFoliosDto;
 import com.imss.sivimss.solipagos.model.request.SolicitudPagoDto;
 import com.imss.sivimss.solipagos.util.AppConstantes;
 import com.imss.sivimss.solipagos.exception.BadRequestException;
@@ -45,6 +46,8 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 	private static final String CREAR = "/crear";
 	
 	private static final String ALTA = "alta";
+	
+	private static final String MULTIPLE = "/insertarMultiple";
 	
 	private static final String ACTUALIZAR = "/actualizar";
 	
@@ -205,6 +208,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		}
 		SolicitudPago solicitudPago = new SolicitudPago();
 		solicitudPago.setId(solicitudPagoDto.getIdSolicitud());
+		
 		try {
 		    return providerRestTemplate.consumirServicio(solicitudPago.detalle(request, formatoFecha).getDatos(), urlDominio + CONSULTA, authentication);
 		} catch (Exception e) {
@@ -213,6 +217,27 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 			return null;
 		}
 
+	}
+	
+	public Response<Object> detFolios(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		SolicitudFoliosDto solicitudFoliosDto = gson.fromJson(datosJson, SolicitudFoliosDto.class);
+		if (solicitudFoliosDto.getIdSolicitud() == null ) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
+		}
+		SolicitudPago solicitudPago = new SolicitudPago();
+		solicitudPago.setId(solicitudFoliosDto.getIdSolicitud());
+		
+		try {
+			return providerRestTemplate.consumirServicio(solicitudPago.deFolios().getDatos(), urlDominio + CONSULTA, authentication);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			return null;
+		}
+		
 	}
 
 	public Response<Object> factura(DatosRequest request, Authentication authentication) throws IOException {
@@ -294,6 +319,29 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		
 		try {
 			return providerRestTemplate.consumirServicio(solicitudPago.crearSolicitud(solicitudDto, formatoFecha).getDatos(), urlDominio + CREAR, authentication);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
+			return null;
+	     }
+		
+	}
+	
+	@Override
+	public Response<Object> agregarFolios(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		SolicitudFoliosDto solicitudFoliosDto = gson.fromJson(datosJson, SolicitudFoliosDto.class);
+		if (solicitudFoliosDto.getIdSolicitud() == null ) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
+		}
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
+		SolicitudPago solicitudPago = new SolicitudPago();
+		solicitudPago.setIdUsuarioAlta(usuarioDto.getIdUsuario());
+		
+		try {
+			return providerRestTemplate.consumirServicio(solicitudPago.agregarFolios(solicitudFoliosDto).getDatos(), urlDominio + MULTIPLE, authentication);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);

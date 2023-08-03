@@ -109,6 +109,18 @@ public class SolicPagosController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
+	@PostMapping("/det-folios")
+	public CompletableFuture<Object> detFolios(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+		
+		Response<?> response = soliPagosService.detFolios(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+
+	}
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
 	@PostMapping("/factura")
 	public CompletableFuture<Object> factura(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
 		
@@ -161,6 +173,18 @@ public class SolicPagosController {
 	public CompletableFuture<Object> agregar(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
 		
 		Response<?> response = soliPagosService.agregarSoli(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+
+	}
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+	@PostMapping("/agrega-folios")
+	public CompletableFuture<Object> agregarFolios(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+		
+		Response<?> response = soliPagosService.agregarFolios(request, authentication);
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 
