@@ -10,6 +10,7 @@ import com.imss.sivimss.solipagos.util.AppConstantes;
 import com.imss.sivimss.solipagos.util.QueryHelper;
 import com.imss.sivimss.solipagos.model.request.BusquedaDto;
 import com.imss.sivimss.solipagos.model.request.DatosFormatoDto;
+import com.imss.sivimss.solipagos.model.request.SolicitudFoliosDto;
 import com.imss.sivimss.solipagos.util.DatosRequest;
 import com.imss.sivimss.solipagos.model.request.SolicitudPagoDto;
 import com.imss.sivimss.solipagos.model.response.CambioEstatusResponse;
@@ -131,6 +132,18 @@ public class SolicitudPago {
 		return request;
 	}
 	
+	public DatosRequest deFolios() throws UnsupportedEncodingException {
+		DatosRequest request = new DatosRequest();
+    	Map<String, Object> parametro = new HashMap<>();
+		StringBuilder query = new StringBuilder("SELECT CVE_FOLIO AS cveFolio FROM SVT_SOLICITUD_FOLIO ");
+		query.append("WHERE ID_SOLICITUD_PAGO = " + this.id);
+		
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+		return request;
+	}
+	
 	public DatosRequest factura(DatosRequest request, String folioFiscal) throws UnsupportedEncodingException {
 		StringBuilder query = new StringBuilder("SELECT IFNULL(PARTIDA_PRES,'') AS partidaPres, CUENTA_CONTABLE AS cuentaContable, ");
 		query.append("IMP_TOTAL AS importeTotal FROM SVC_FACTURA WHERE CVE_FOLIO_FISCAL = '" + folioFiscal + "' ");
@@ -212,6 +225,22 @@ public class SolicitudPago {
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
 		
+		return request;
+	}
+	
+	public DatosRequest agregarFolios(SolicitudFoliosDto solicitudFoliosDto) throws UnsupportedEncodingException {
+		DatosRequest request = new DatosRequest();
+		Map<String, Object> parametro = new HashMap<>();
+		StringBuilder query = new StringBuilder("");
+		for (String cveFolio : solicitudFoliosDto.getCveFolios()) {
+			query.append("INSERT INTO SVT_SOLICITUD_FOLIO (ID_SOLICITUD_PAGO, CVE_FOLIO) VALUES (" + solicitudFoliosDto.getIdSolicitud() + ", '" + cveFolio +"');$$");
+		}
+		
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+		parametro.put(AppConstantes.QUERY, encoded);
+		parametro.put("separador", "$$");
+		request.setDatos(parametro);
+				
 		return request;
 	}
 		
