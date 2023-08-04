@@ -45,7 +45,7 @@ public class SolicitudPago {
 		return request;
 	}
 	
-	public DatosRequest listaTiposSoli(BusquedaDto busqueda) throws UnsupportedEncodingException {
+	public DatosRequest listaTiposSoli() throws UnsupportedEncodingException {
     	DatosRequest request = new DatosRequest();
     	Map<String, Object> parametro = new HashMap<>();
     	StringBuilder query = new StringBuilder("SELECT ID_TIPO_SOLICITUD AS tipoSolicitud, DES_TIPO_SOLICITUD AS desTipoSolicitud ");
@@ -284,7 +284,7 @@ public class SolicitudPago {
 	
 	public DatosRequest datosFormato(DatosRequest request, DatosFormatoDto reporteDto, String formatoFecha) throws UnsupportedEncodingException {
 		StringBuilder query = new StringBuilder("");
-		if (reporteDto.idUnidadOperativa != null) {
+		if (reporteDto.getIdUnidadOperativa() != null) {
 		    query.append("SELECT sfb.NOM_SUBDIRECCION AS unidadAdmOpe, sfb.DES_REFERENCIA AS referenciaUnidad, sp.NUM_REFERENCIA_DT AS refDirTec, \n");
 		    query.append("prv.NOM_PROVEEDOR AS beneficiario, sp.DES_CONCEPTO AS concepto, sp.DES_OBSERVACIONES AS observaciones, con.NUM_CONTRATO AS numContrato, \n");
 		    query.append("DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, sp.DES_NOMBRE_REMITENTE AS remitente, \n");
@@ -331,8 +331,8 @@ public class SolicitudPago {
 			envioDatos.put("periodo", reporteDto.getPeriodo());
 		}
 		envioDatos.put("importe", reporteDto.getImporte().toString()); 
-		envioDatos.put("canLetra", reporteDto.cantidadLetra);
-		envioDatos.put("datBancarios", reporteDto.datosBancarios);
+		envioDatos.put("canLetra", reporteDto.getCantidadLetra());
+		envioDatos.put("datBancarios", reporteDto.getDatosBancarios());
 		envioDatos.put("observaciones", reporteDto.getObservaciones());
 		envioDatos.put("solicitado", " ");
 		envioDatos.put("subAdmin", "Lic. Armando Julio Mosco Neria");

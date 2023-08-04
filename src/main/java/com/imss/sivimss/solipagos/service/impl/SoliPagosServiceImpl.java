@@ -114,19 +114,14 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		Gson gson = new Gson();
 		SolicitudPago solicitudPago = new SolicitudPago();
 		
-		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
-		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
-		Response<Object> response = null;
-		
 		try {
-		    response = providerRestTemplate.consumirServicio(solicitudPago.listaTiposSoli(busqueda).getDatos(), urlDominio + CONSULTA, authentication);
+		    return providerRestTemplate.consumirServicio(solicitudPago.listaTiposSoli().getDatos(), urlDominio + CONSULTA, authentication);
 		} catch (Exception e) {
 			log.error(e.getMessage());
         	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
 			return null;
         }
 		
-		return response;
 	}
 	
 	@Override
@@ -358,7 +353,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		DatosFormatoDto reporteDto = gson.fromJson(datosJson, DatosFormatoDto.class);
 		if (reporteDto.getIdSolicitud() == null || reporteDto.getIdTipoSolicitud() == null) {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
-		} else if ((reporteDto.getIdVelatorio() == null && reporteDto.idUnidadOperativa == null) || reporteDto.getIdTipoSolicitud() > 6) {
+		} else if ((reporteDto.getIdVelatorio() == null && reporteDto.getIdUnidadOperativa() == null) || reporteDto.getIdTipoSolicitud() > 6) {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion no valida");
 		}
 		
