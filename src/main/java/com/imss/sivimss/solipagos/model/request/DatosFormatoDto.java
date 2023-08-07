@@ -10,23 +10,23 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DatosFormatoDto {
 
-	public Integer idSolicitud;
-	public Integer idTipoSolicitud;
-	public Integer idVelatorio;
-	public Integer idUnidadOperativa;
-	public String unidadAdmOpe;
-	public String referenciaUnidad;
-    public Integer refDirTec;
-    public String beneficiario;
-    public String remitente;
-    public String numContrato;
-    public String concepto;
-    public String fechaElabora;
-    public String periodo;
-    public Double importe;
-	public String cantidadLetra;
-	public String datosBancarios;
-	public String observaciones;
-	public String tipoReporte;
+	private Integer idSolicitud;
+	private Integer idTipoSolicitud;
+	private Integer idVelatorio;
+	private Integer idUnidadOperativa;
+	private String unidadAdmOpe;
+	private String referenciaUnidad;
+    private Integer refDirTec;
+    private String beneficiario;
+    private String remitente;
+    private String numContrato;
+    private String concepto;
+    private String fechaElabora;
+    private String periodo;
+    private Double importe;
+	private String cantidadLetra;
+	private String datosBancarios;
+	private String observaciones;
+	private String tipoReporte;
 	
 }
