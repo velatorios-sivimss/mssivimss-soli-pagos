@@ -119,12 +119,18 @@ public class SolicitudPago {
 		query.append("SP.CVE_FOLIO_GASTOS AS cveFolioGastos, SP.CVE_FOLIO_CONSIGNADOS AS cveFolioConsignados, SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, \n");
 	    query.append("SP.ID_UNIDAD_OPERATIVA AS idUnidadOperativa, SP.ID_TIPO_SOLICITUD AS idTipoSolicitud, TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud, \n");
 		query.append("DATE_FORMAT(SP.FEC_ELABORACION,'" + formatoFecha + "') AS fecElabora, PRV.NOM_PROVEEDOR AS nomBeneficiario, \n");
-		query.append("SP.ID_ESTATUS_SOLICITUD AS idEstatusSol, EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud, SP.IMP_TOTAL AS impTotal \n");
+		query.append("SP.ID_ESTATUS_SOLICITUD AS idEstatusSol, EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud, SP.IMP_TOTAL AS impTotal, \n");
+		query.append("SFIB.DES_REFERENCIA AS refeUnidadOpe, SP.DES_NOMBRE_DESTINATARIO AS nomDestinatario, DES_NOMBRE_REMITENTE AS nomRemitente, \n");
+		query.append("SP.NUM_REFERENCIA_DT AS referenciaTD, SP.FEC_INICIAL AS fechaInicial, SP.FEC_FINAL AS fechaFinal, PRV.DES_BANCO AS banco, \n");
+		query.append("' ' AS cuenta, PRV.CVE_BANCARIA AS claveBancaria, SP.DES_CONCEPTO AS concepto, CON.NUM_CONTRATO AS numContrato, \n");
+		query.append("SP.DES_OBSERVACIONES AS observaciones \n");
 		query.append("FROM SVT_SOLICITUD_PAGO SP \n");
 		query.append("JOIN SVC_VELATORIO VEL ON VEL.ID_VELATORIO = SP.ID_VELATORIO \n");
 		query.append("JOIN SVC_TIPO_SOLICITUD_PAGO TIP ON TIP.ID_TIPO_SOLICITUD = SP.ID_TIPO_SOLICITUD \n");
-		query.append("JOIN SVT_PROVEEDOR PRV ON PRV.ID_PROVEEDOR = SP.ID_PROVEEDOR \n");
 		query.append("JOIN SVC_ESTATUS_SOLICITUD_PAGO EST ON EST.ID_ESTATUS_SOLICITUD = SP.ID_ESTATUS_SOLICITUD \n");
+		query.append("LEFT JOIN SVT_PROVEEDOR PRV ON PRV.ID_PROVEEDOR = SP.ID_PROVEEDOR \n");
+		query.append("LEFT JOIN SVT_SUBDIRECCION_FIBESO SFIB ON SFIB. ID_SUBDIRECCION = SP.ID_UNIDAD_OPERATIVA \n");
+		query.append("LEFT JOIN SVT_CONTRATO CON ON CON.ID_PROVEEDOR = PRV.ID_PROVEEDOR \n");
 		query.append("WHERE ID_SOLICITUD_PAGO = " + this.getId());
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
@@ -132,7 +138,7 @@ public class SolicitudPago {
 		return request;
 	}
 	
-	public DatosRequest deFolios() throws UnsupportedEncodingException {
+	public DatosRequest detFolios() throws UnsupportedEncodingException {
 		DatosRequest request = new DatosRequest();
     	Map<String, Object> parametro = new HashMap<>();
 		StringBuilder query = new StringBuilder("SELECT CVE_FOLIO AS cveFolio FROM SVT_SOLICITUD_FOLIO ");

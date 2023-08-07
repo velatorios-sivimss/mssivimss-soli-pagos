@@ -226,7 +226,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		solicitudPago.setId(solicitudFoliosDto.getIdSolicitud());
 		
 		try {
-			return providerRestTemplate.consumirServicio(solicitudPago.deFolios().getDatos(), urlDominio + CONSULTA, authentication);
+			return providerRestTemplate.consumirServicio(solicitudPago.detFolios().getDatos(), urlDominio + CONSULTA, authentication);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
