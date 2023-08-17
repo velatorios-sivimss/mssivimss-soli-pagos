@@ -122,7 +122,7 @@ public class SolicitudPago {
 		query.append("SP.ID_ESTATUS_SOLICITUD AS idEstatusSol, EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud, SP.IMP_TOTAL AS impTotal, \n");
 		query.append("SFIB.DES_REFERENCIA AS refeUnidadOpe, SP.DES_NOMBRE_DESTINATARIO AS nomDestinatario, DES_NOMBRE_REMITENTE AS nomRemitente, \n");
 		query.append("SP.NUM_REFERENCIA_DT AS referenciaTD, SP.FEC_INICIAL AS fechaInicial, SP.FEC_FINAL AS fechaFinal, PRV.DES_BANCO AS banco, \n");
-		query.append("' ' AS cuenta, PRV.CVE_BANCARIA AS claveBancaria, SP.DES_CONCEPTO AS concepto, CON.NUM_CONTRATO AS numContrato, \n");
+		query.append("' ' AS cuenta, PRV.CVE_BANCARIA AS claveBancaria, SP.DES_CONCEPTO AS concepto, CON.CVE_CONTRATO AS numContrato, \n");
 		query.append("SP.DES_OBSERVACIONES AS observaciones \n");
 		query.append("FROM SVT_SOLICITUD_PAGO SP \n");
 		query.append("JOIN SVC_TIPO_SOLICITUD_PAGO TIP ON TIP.ID_TIPO_SOLICITUD = SP.ID_TIPO_SOLICITUD \n");
@@ -193,7 +193,7 @@ public class SolicitudPago {
     	DatosRequest request = new DatosRequest();
     	Map<String, Object> parametro = new HashMap<>();
     	StringBuilder query = new StringBuilder("SELECT PRV.ID_PROVEEDOR AS idProveedor, NOM_PROVEEDOR AS nomProveedor, ");
-    	query.append("DES_BANCO AS banco, CVE_BANCARIA AS cveBancaria, ' ' AS cuenta , NUM_CONTRATO AS numeroContrato ");
+    	query.append("DES_BANCO AS banco, CVE_BANCARIA AS cveBancaria, ' ' AS cuenta , CVE_CONTRATO AS numeroContrato ");
     	query.append("FROM SVT_PROVEEDOR PRV JOIN SVT_CONTRATO CON ON CON.ID_PROVEEDOR = PRV.ID_PROVEEDOR ");
     	
     	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
@@ -292,7 +292,7 @@ public class SolicitudPago {
 		StringBuilder query = new StringBuilder("");
 		if (reporteDto.getIdUnidadOperativa() != null) {
 		    query.append("SELECT sfb.NOM_SUBDIRECCION AS unidadAdmOpe, sfb.DES_REFERENCIA AS referenciaUnidad, sp.NUM_REFERENCIA_DT AS refDirTec, \n");
-		    query.append("prv.NOM_PROVEEDOR AS beneficiario, sp.DES_CONCEPTO AS concepto, sp.DES_OBSERVACIONES AS observaciones, con.NUM_CONTRATO AS numContrato, \n");
+		    query.append("prv.NOM_PROVEEDOR AS beneficiario, sp.DES_CONCEPTO AS concepto, sp.DES_OBSERVACIONES AS observaciones, con.CVE_CONTRATO AS numContrato, \n");
 		    query.append("DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, sp.DES_NOMBRE_REMITENTE AS remitente, \n");
 		    query.append("CONCAT('DEL: ',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "'),' AL ',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "')) AS periodo, \n ");
 		    query.append("sp.IMP_TOTAL AS importe, CONCAT(prv.DES_BANCO,' ',prv.CVE_BANCARIA,' ') AS datosBancarios \n");
@@ -303,7 +303,7 @@ public class SolicitudPago {
 		    query.append("WHERE sp.ID_SOLICITUD_PAGO = " + reporteDto.getIdSolicitud());
 		} else {
 			query.append("SELECT vel.DES_VELATORIO AS unidadAdmOpe, vel.DES_VELATORIO AS referenciaUnidad, sp.NUM_REFERENCIA_DT AS refDirTec, \n");
-			query.append("prv.NOM_PROVEEDOR AS beneficiario, sp.DES_CONCEPTO AS concepto, sp.DES_OBSERVACIONES AS observaciones, con.NUM_CONTRATO AS numContrato, \n");
+			query.append("prv.NOM_PROVEEDOR AS beneficiario, sp.DES_CONCEPTO AS concepto, sp.DES_OBSERVACIONES AS observaciones, con.CVE_CONTRATO AS numContrato, \n");
 		    query.append("DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, sp.DES_NOMBRE_REMITENTE AS remitente, \n");
 		    query.append("CONCAT('DEL: ',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "'),' AL',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "')) AS periodo, \n ");
 		    query.append("sp.IMP_TOTAL AS importe, CONCAT(prv.DES_BANCO,' ',prv.CVE_BANCARIA,' ') AS datosBancarios \n");
