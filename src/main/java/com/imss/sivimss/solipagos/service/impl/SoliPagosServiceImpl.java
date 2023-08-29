@@ -111,7 +111,6 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 
 	@Override
 	public Response<Object> listaTiposSoli(DatosRequest request, Authentication authentication) throws IOException {
-		Gson gson = new Gson();
 		SolicitudPago solicitudPago = new SolicitudPago();
 		
 		try {
