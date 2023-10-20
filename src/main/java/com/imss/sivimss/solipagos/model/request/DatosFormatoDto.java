@@ -27,6 +27,7 @@ public class DatosFormatoDto {
 	private String cantidadLetra;
 	private String datosBancarios;
 	private String observaciones;
+	private String solicitado;
 	private String tipoReporte;
 	
 }
