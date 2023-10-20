@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ import com.imss.sivimss.solipagos.exception.BadRequestException;
 import com.imss.sivimss.solipagos.model.request.UsuarioDto;
 import com.imss.sivimss.solipagos.model.response.CambioEstatusResponse;
 import com.imss.sivimss.solipagos.util.MensajeResponseUtil;
+import com.imss.sivimss.solipagos.util.NumeroAPalabra;
 import com.imss.sivimss.solipagos.beans.SolicitudPago;
 import com.imss.sivimss.solipagos.service.SoliPagosService;
 import com.imss.sivimss.solipagos.util.DatosRequest;
@@ -262,7 +264,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 	public Response<Object> listaVelatorios(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 		SolicitudPago solicitudPago = new SolicitudPago();
-		String datosJson = String.valueOf(authentication.getPrincipal());
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
 		
 		try {
@@ -335,7 +337,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		solicitudPago.setIdUsuarioAlta(usuarioDto.getIdUsuario());
 		
 		try {
-			return providerRestTemplate.consumirServicio(solicitudPago.agregarFolios(solicitudFoliosDto).getDatos(), urlDominio + MULTIPLE, authentication);
+			return providerRestTemplate.consumirServicio(solicitudPago.agregarFolios(solicitudFoliosDto, usuarioDto.getIdUsuario()).getDatos(), urlDominio + MULTIPLE, authentication);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
@@ -360,7 +362,8 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		Response<?> response1 = providerRestTemplate.consumirServicio(solicitudPago.datosFormato(request, reporteDto, formatoFecha).getDatos(), urlDominio + CONSULTA, 
 				authentication);
 		ArrayList<LinkedHashMap> datos1 = (ArrayList) response1.getDatos();
-		if (datos1.size() > 0) {
+		NumeroAPalabra numeroAPalabra = new NumeroAPalabra() ;
+		if (!datos1.isEmpty()) {
 			reporteDto.setUnidadAdmOpe(datos1.get(0).get("unidadAdmOpe").toString());
 			reporteDto.setReferenciaUnidad(datos1.get(0).get("referenciaUnidad").toString());
 			reporteDto.setRefDirTec(Integer.valueOf(datos1.get(0).get("refDirTec").toString()));
@@ -373,6 +376,8 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 			reporteDto.setImporte(Double.valueOf(datos1.get(0).get("importe").toString()));
 			reporteDto.setDatosBancarios(datos1.get(0).get("datosBancarios")==null?"":datos1.get(0).get("datosBancarios").toString());
 			reporteDto.setObservaciones(datos1.get(0).get("observaciones")==null?"":datos1.get(0).get("observaciones").toString());
+			reporteDto.setCantidadLetra(numeroAPalabra.convertirAPalabras(datos1.get(0).get("importe").toString(), true) ); //+ " " + obtenerDecimales(datos1.get(0).get("importe").toString()) + "/100 M.N." );
+			reporteDto.setSolicitado(datos1.get(0).get("solicitado") == null ? "": datos1.get(0).get("solicitado").toString());
 		}
 		
 		Map<String, Object> envioDatos = solicitudPago.generarFormato(reporteDto, NOMBREPDFFORMATOS[reporteDto.getIdTipoSolicitud()-1]);
@@ -471,4 +476,8 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		return MensajeResponseUtil.mensajeConsultaResponse(response, ERROR_DESCARGA);
 	}
 
+		private String obtenerDecimales (String s) {
+			String[] num = s.split(".");
+			return num[1];        
+	    }
 }
