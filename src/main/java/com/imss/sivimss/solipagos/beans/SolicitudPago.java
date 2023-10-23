@@ -168,12 +168,7 @@ public class SolicitudPago {
     	DatosRequest request = new DatosRequest();
     	Map<String, Object> parametro = new HashMap<>();
     	StringBuilder query = new StringBuilder("SELECT sv.ID_VELATORIO AS idVelatorio, sv.DES_VELATORIO AS desVelatorio, sv.NOM_RESPO_SANITARIO AS nomResponsable ");
-	    query.append("FROM SVC_VELATORIO sv WHERE 1 = 1 ");
-    	if (busqueda.getIdDelegacion() != null ) {
-    		query.append(" AND sv.ID_DELEGACION = ").append(busqueda.getIdDelegacion());
-    	}if (busqueda.getIdVelatorio() != null) {
-    		query.append(" AND sv.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
-    	}
+	    query.append("FROM SVC_VELATORIO sv ");
     	log.info(query.toString());
     	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
 		parametro.put(AppConstantes.QUERY, encoded);
