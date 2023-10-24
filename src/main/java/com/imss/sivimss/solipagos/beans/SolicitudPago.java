@@ -131,7 +131,9 @@ public class SolicitudPago {
 				+ "SP.ID_UNIDAD_OPERATIVA AS idUnidadOperativa, \r\n"
 				+ "SP.ID_TIPO_SOLICITUD AS idTipoSolicitud, \r\n"
 				+ "TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud,  \r\n"
-				+ "DATE_FORMAT(SP.FEC_ELABORACION,'%d/%m/%Y') AS fecElabora, \r\n"
+				+ "DATE_FORMAT(SP.FEC_ELABORACION,'");
+		query.append(formatoFecha);
+		query.append("') AS fecElabora, \r\n"
 				+ "PRV.REF_PROVEEDOR AS nomBeneficiario,  \r\n"
 				+ "SP.ID_ESTATUS_SOLICITUD AS idEstatusSol,\r\n"
 				+ "EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud, \r\n"
@@ -142,23 +144,36 @@ public class SolicitudPago {
 				+ "SP.NOM_DESTINATARIO AS nomDestinatario, \r\n"
 				+ "NOM_REMITENTE AS nomRemitente,  \r\n"
 				+ "SP.NUM_REFERENCIA_DT AS referenciaTD, \r\n"
-				+ "SP.FEC_INICIAL AS fechaInicial, \r\n"
-				+ "SP.FEC_FINAL AS fechaFinal, \r\n"
+				+ "DATE_FORMAT(SP.FEC_INICIAL,'");
+		query.append(formatoFecha);
+		query.append("') AS fechaInicial, \r\n"
+				+ "DATE_FORMAT(SP.FEC_FINAL,'");
+		query.append(formatoFecha);
+		query.append("') AS fechaFinal, \r\n"
 				+ "PRV.REF_BANCO AS banco,  \r\n"
 				+ "PRV.NUM_CUENTA AS cuenta, \r\n"
 				+ "PRV.CVE_BANCARIA AS claveBancaria, \r\n"
 				+ "SP.REF_CONCEPTO AS concepto, \r\n"
 				+ "CON.CVE_CONTRATO AS numContrato,  \r\n"
 				+ "SP.REF_OBSERVACIONES AS observaciones,\r\n"
-				+ "SP.ID_SOLICITUD_PAGO AS folioSolicitud\r\n"
+				+ "SP.ID_SOLICITUD_PAGO AS folioSolicitud,\r\n"
+				+ "(\r\n"
+				+ "SELECT\r\n"
+				+ "GROUP_CONCAT( CVE_FOLIO SEPARATOR ', ' )\r\n"
+				+ "FROM \r\n"
+				+ "SVT_SOLICITUD_FOLIO\r\n"
+				+ "WHERE \r\n"
+				+ "ID_SOLICITUD_PAGO = ");
+		query.append( this.getId() );
+		query.append( " ) AS foliosFactura\r\n"
 				+ "FROM SVT_SOLICITUD_PAGO SP  \r\n"
 				+ "JOIN SVC_TIPO_SOLICITUD_PAGO TIP ON TIP.ID_TIPO_SOLICITUD = SP.ID_TIPO_SOLICITUD  \r\n"
 				+ "JOIN SVC_ESTATUS_SOLICITUD_PAGO EST ON EST.ID_ESTATUS_SOLICITUD = SP.ID_ESTATUS_SOLICITUD  \r\n"
 				+ "LEFT JOIN SVC_VELATORIO VEL ON VEL.ID_VELATORIO = SP.ID_VELATORIO  \r\n"
 				+ "LEFT JOIN SVT_PROVEEDOR PRV ON PRV.ID_PROVEEDOR = SP.ID_PROVEEDOR  \r\n"
 				+ "LEFT JOIN SVT_SUBDIRECCION_FIBESO SFIB ON SFIB. ID_SUBDIRECCION = SP.ID_UNIDAD_OPERATIVA  \r\n"
-				+ "LEFT JOIN SVT_CONTRATO CON ON CON.ID_PROVEEDOR = PRV.ID_PROVEEDOR  \r\n"
-				);
+				+ "LEFT JOIN SVT_CONTRATO CON ON CON.ID_PROVEEDOR = PRV.ID_PROVEEDOR  " );
+		
 		query.append("WHERE ID_SOLICITUD_PAGO = " + this.getId());
 		log.info(query.toString());
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
