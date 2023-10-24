@@ -241,7 +241,7 @@ public class SolicitudPago {
 		StringBuilder query = new StringBuilder("");
 		for (String cveFolio : solicitudFoliosDto.getCveFolios()) {
 			query.append("INSERT INTO SVT_SOLICITUD_FOLIO (ID_SOLICITUD_PAGO, CVE_FOLIO, ID_USUARIO_ALTA, FEC_ALTA) "
-					+ " VALUES (" + solicitudFoliosDto.getIdSolicitud() + ", '" + cveFolio +"'," + idUsuarioAlta + ", CURDATE() );$$");
+					+ " VALUES (" + solicitudFoliosDto.getIdSolicitud() + ", '" + cveFolio +"'," + idUsuarioAlta + ", NOW() );$$");
 		}
 		log.info(query.toString());
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
