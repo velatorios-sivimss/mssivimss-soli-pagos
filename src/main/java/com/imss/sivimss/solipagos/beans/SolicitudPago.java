@@ -385,7 +385,7 @@ public class SolicitudPago {
 	    		
 	private StringBuilder armaQuery(String formatoFecha) {
 		
-		StringBuilder query = new StringBuilder("SELECT SP.ID_SOLICITUD_PAGO AS idSolicitud, VEL.DES_VELATORIO AS desVelatorio, NULLIF(SP.CVE_FOLIO_GASTOS,SP.CVE_FOLIO_CONSIGNADOS) AS cveFolio,  ");
+		StringBuilder query = new StringBuilder("SELECT SP.ID_SOLICITUD_PAGO AS idSolicitud, VEL.DES_VELATORIO AS desVelatorio, SP.ID_SOLICITUD_PAGO AS cveFolio,  ");
 		query.append("(SELECT CVE_FOLIO FROM SVT_SOLICITUD_FOLIO WHERE ID_SOLICITUD_PAGO = idSolicitud LIMIT 1) AS cveFolios,  ");
 		query.append("SP.ID_UNIDAD_OPERATIVA AS idUnidadOperartiva, SP.ID_VELATORIO AS idVelatorio, SP.IMP_TOTAL AS importe,  ");
 		query.append("SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, DATE_FORMAT(SP.FEC_ELABORACION,'" + formatoFecha + "') AS fecElaboracion,  ");
