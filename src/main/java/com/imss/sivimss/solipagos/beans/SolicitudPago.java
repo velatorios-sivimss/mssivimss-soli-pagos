@@ -145,7 +145,7 @@ public class SolicitudPago {
 				+ "SP.FEC_INICIAL AS fechaInicial, \r\n"
 				+ "SP.FEC_FINAL AS fechaFinal, \r\n"
 				+ "PRV.REF_BANCO AS banco,  \r\n"
-				+ "' ' AS cuenta, \r\n"
+				+ "PRV.NUM_CUENTA AS cuenta, \r\n"
 				+ "PRV.CVE_BANCARIA AS claveBancaria, \r\n"
 				+ "SP.REF_CONCEPTO AS concepto, \r\n"
 				+ "CON.CVE_CONTRATO AS numContrato,  \r\n"
