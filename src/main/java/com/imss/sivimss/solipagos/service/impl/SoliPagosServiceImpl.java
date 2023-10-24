@@ -105,7 +105,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
         	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-			return null;
+        	throw new IOException("Error al listar los ejerciocios");
         }
 		
 		return response;
@@ -120,7 +120,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
         	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-			return null;
+        	throw new IOException("Error al listar los Tipos de Solicitud");
         }
 		
 	}
@@ -138,7 +138,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
         	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-			return null;
+        	throw new IOException("Error al buscar los folios");
         }
 		    
 		return response;
@@ -158,7 +158,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
         	log.error(e.getMessage());
         	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-			return null;
+        	throw new IOException("Error al consultar la informacion");
         }
 		
 		return response;
@@ -187,7 +187,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
         	log.error(e.getMessage());
         	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-			return null;
+        	throw new IOException("Error al buscar la informacion");
         }
 		
 		return response;
@@ -210,7 +210,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-			return null;
+	       	throw new IOException("Error al buscar el detalle de la informacion");
 		}
 
 	}
@@ -231,7 +231,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-			return null;
+	       	throw new IOException("Error al buscar el detalle de los Folios");
 		}
 		
 	}
@@ -256,7 +256,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-			return null;
+	       	throw new IOException("Error al buscar la informacion de la Factura");
 		}
 	}
 	
@@ -272,7 +272,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 		    log.error(e.getMessage());
        	    logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-		    return null;
+       	 throw new IOException("Error al listar los velatorios");
 	    }
 		
 	}
@@ -285,7 +285,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 		    log.error(e.getMessage());
        	    logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-		    return null;
+       	 throw new IOException("Error al listar las Unidades Operativas");
 	    }
 		
 	}
@@ -298,7 +298,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 		    log.error(e.getMessage());
        	    logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-		    return null;
+       	 throw new IOException("Error al listar los datos del Banco");
 	    }
 		
 	}
@@ -327,7 +327,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
-			return null;
+	       	throw new IOException("Error al agregar la solicitud");
 	     }
 		
 	}
@@ -350,7 +350,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
-			return null;
+	       	throw new IOException("Error al agregar los folio");
 	     }
 		
 	}
@@ -414,7 +414,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
-			return null;
+			throw new IOException("Error al aprobar la solicitud");
 		}
 	
 	}
@@ -439,7 +439,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
-			return null;
+			throw new IOException("Error al cancelar la solicitud");
 		}
 	
 	}
@@ -464,7 +464,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
-			return null;
+			throw new IOException("Error al rechazar la solicitud");
 		}
 	}
 
