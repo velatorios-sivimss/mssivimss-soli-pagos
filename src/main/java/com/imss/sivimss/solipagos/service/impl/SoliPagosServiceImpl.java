@@ -313,6 +313,15 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		SolicitudPago solicitudPago = new SolicitudPago();
 		solicitudPago.setIdUsuarioAlta(usuarioDto.getIdUsuario());
 		
+		if( solicitudDto.getIdVelatorio() == null ) {
+			solicitudDto.setIdVelatorio( usuarioDto.getIdVelatorio() );
+		}
+		
+		if( solicitudDto.getEjercicioFiscal() == null ) {
+			String ejercicio = solicitudDto.getFechaElabora().substring(6,10);
+			solicitudDto.setEjercicioFiscal( Integer.parseInt(ejercicio) );
+		}
+		
 		try {
 			return providerRestTemplate.consumirServicio(solicitudPago.crearSolicitud(solicitudDto, formatoFecha).getDatos(), urlDominio + CREAR, authentication);
 		} catch (Exception e) {
