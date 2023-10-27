@@ -165,8 +165,12 @@ public class SolicitudPago {
 				+ "WHERE \r\n"
 				+ "ID_SOLICITUD_PAGO = ");
 		query.append( this.getId() );
-		query.append( " ) AS foliosFactura\r\n"
-				+ "FROM SVT_SOLICITUD_PAGO SP  \r\n"
+		query.append( " ) AS foliosFactura,\r\n");
+		query.append("IFNULL(\r\n"
+				+ "VEL.NOM_RESPO_SANITARIO,\r\n"
+				+ "SFIB.NOM_RESPONSABLE\r\n"
+				+ ") AS nomResponsable \r\n");
+		query.append("FROM SVT_SOLICITUD_PAGO SP  \r\n"
 				+ "JOIN SVC_TIPO_SOLICITUD_PAGO TIP ON TIP.ID_TIPO_SOLICITUD = SP.ID_TIPO_SOLICITUD  \r\n"
 				+ "JOIN SVC_ESTATUS_SOLICITUD_PAGO EST ON EST.ID_ESTATUS_SOLICITUD = SP.ID_ESTATUS_SOLICITUD  \r\n"
 				+ "LEFT JOIN SVC_VELATORIO VEL ON VEL.ID_VELATORIO = SP.ID_VELATORIO  \r\n"
