@@ -371,7 +371,6 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		Response<?> response1 = providerRestTemplate.consumirServicio(solicitudPago.datosFormato(request, reporteDto, formatoFecha).getDatos(), urlDominio + CONSULTA, 
 				authentication);
 		ArrayList<LinkedHashMap> datos1 = (ArrayList) response1.getDatos();
-		NumeroAPalabra numeroAPalabra = new NumeroAPalabra() ;
 		if (!datos1.isEmpty()) {
 			reporteDto.setUnidadAdmOpe(datos1.get(0).get("unidadAdmOpe").toString());
 			reporteDto.setReferenciaUnidad(datos1.get(0).get("referenciaUnidad").toString());
@@ -385,7 +384,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 			reporteDto.setImporte(Double.valueOf(datos1.get(0).get("importe").toString()));
 			reporteDto.setDatosBancarios(datos1.get(0).get("datosBancarios")==null?"":datos1.get(0).get("datosBancarios").toString());
 			reporteDto.setObservaciones(datos1.get(0).get("observaciones")==null?"":datos1.get(0).get("observaciones").toString());
-			reporteDto.setCantidadLetra(numeroAPalabra.convertirAPalabras(datos1.get(0).get("importe").toString(), true) ); //+ " " + obtenerDecimales(datos1.get(0).get("importe").toString()) + "/100 M.N." );
+			reporteDto.setCantidadLetra(reporteDto.getCantidadLetra());
 			reporteDto.setSolicitado(datos1.get(0).get("solicitado") == null ? "": datos1.get(0).get("solicitado").toString());
 		}
 		
