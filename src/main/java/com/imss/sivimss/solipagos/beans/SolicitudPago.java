@@ -167,8 +167,8 @@ public class SolicitudPago {
 		query.append( this.getId() );
 		query.append( " ) AS foliosFactura,\r\n");
 		query.append("IFNULL(\r\n"
-				+ "VEL.NOM_RESPO_SANITARIO,\r\n"
-				+ "SFIB.NOM_RESPONSABLE\r\n"
+				+ "SFIB.NOM_RESPONSABLE,\r\n"
+				+ "VEL.NOM_RESPO_SANITARIO\r\n"
 				+ ") AS nomResponsable \r\n");
 		query.append("FROM SVT_SOLICITUD_PAGO SP  \r\n"
 				+ "JOIN SVC_TIPO_SOLICITUD_PAGO TIP ON TIP.ID_TIPO_SOLICITUD = SP.ID_TIPO_SOLICITUD  \r\n"

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.imss.sivimss</groupId>
 	<artifactId>soli-pagos</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.30-SNAPSHOT</version>
 	<name>mx.gob.imss.solipagos</name>
 	<description>Ms Solicitud Pagos</description>
 	<properties>
