@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.imss.sivimss.solipagos.util.AppConstantes;
 import com.imss.sivimss.solipagos.util.QueryHelper;
+import com.imss.sivimss.solipagos.util.Utilidades;
 import com.imss.sivimss.solipagos.model.request.BusquedaDto;
 import com.imss.sivimss.solipagos.model.request.DatosFormatoDto;
 import com.imss.sivimss.solipagos.model.request.SolicitudFoliosDto;
@@ -395,9 +396,12 @@ public class SolicitudPago {
 		return envioDatos;
 	}
 	
-	public Map<String, Object> generarReporte(BusquedaDto reporteDto,String nombrePdfReportes, String formatoFecha) {
+	public Map<String, Object> generarReporte(DatosRequest request, BusquedaDto reporteDto,String nombrePdfReportes, String formatoFecha) {
 		Map<String, Object> envioDatos = new HashMap<>();
 		StringBuilder condicion = new StringBuilder(" ");
+
+		DatosRequest dr= consulta(request, reporteDto, formatoFecha);
+		
 		if (reporteDto.getIdOficina().equals(NIVEL_DELEGACION)) {
 			condicion.append(" AND VEL.ID_DELEGACION = ").append(reporteDto.getIdDelegacion());
     	} else if (reporteDto.getIdVelatorio() != null) {
@@ -415,7 +419,9 @@ public class SolicitudPago {
 		if (reporteDto.getFolioSolicitud() != null) {
 			condicion.append(" AND SP.CVE_FOLIO_GASTOS = '" + reporteDto.getFolioSolicitud() + "' ");
 		}
-		envioDatos.put("condicion", condicion.toString());
+		envioDatos.put("periodo", Utilidades.periodo(reporteDto.getFecInicial(), reporteDto.getFecFinal()));
+		String str = queryDecoded(dr.getDatos());
+		envioDatos.put("condicion", str);
 		envioDatos.put("tipoReporte", reporteDto.getTipoReporte());
 		envioDatos.put("rutaNombreReporte", nombrePdfReportes);
 		if (reporteDto.getTipoReporte().equals("xls")) {
@@ -432,7 +438,7 @@ public class SolicitudPago {
 		query.append("SP.ID_UNIDAD_OPERATIVA AS idUnidadOperartiva, SP.ID_VELATORIO AS idVelatorio, SP.IMP_TOTAL AS importe,  ");
 		query.append("SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, DATE_FORMAT(SP.FEC_ELABORACION,'" + formatoFecha + "') AS fecElaboracion,  ");
 	    query.append("SP.ID_TIPO_SOLICITUD AS idTipoSolicitid, TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud, PRV.ID_PROVEEDOR AS idProveedor,  ");
-	    query.append("IFNULL(PRV.REF_PROVEEDOR,SP.NOM_BENEFICIARIO) AS nomBeneficiario,  ");
+	    query.append("IFNULL(IFNULL(PRV.REF_PROVEEDOR,SP.NOM_BENEFICIARIO),'') AS nomBeneficiario,  ");
 		query.append("SP.ID_ESTATUS_SOLICITUD AS idEstatus, EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud,  ");
 		query.append("SP.REF_MOTIVO_CANCELACION AS motCancelacion, SP.REF_MOTIVO_RECHAZO AS motRechazo ");
 		query.append("FROM SVT_SOLICITUD_PAGO SP  ");
@@ -452,5 +458,7 @@ public class SolicitudPago {
             return "'" + valor + "'";
         }
     }
-	
+	private String queryDecoded (Map<String, Object> envioDatos ) {
+		return new String(DatatypeConverter.parseBase64Binary(envioDatos.get(AppConstantes.QUERY).toString()));
+	}
 }

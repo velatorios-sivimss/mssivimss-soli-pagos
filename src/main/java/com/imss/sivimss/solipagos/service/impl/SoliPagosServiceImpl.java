@@ -479,7 +479,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 		reporteDto.setIdOficina(buscaUser.getIdOficina());
 		reporteDto.setIdDelegacion(buscaUser.getIdDelegacion());
 		
-		Map<String, Object> envioDatos = new SolicitudPago().generarReporte(reporteDto, NOMBREPDFREPORTE, formatoFecha);
+		Map<String, Object> envioDatos = new SolicitudPago().generarReporte(request,reporteDto, NOMBREPDFREPORTE, formatoFecha);
 		Response<Object> response =  providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 		return MensajeResponseUtil.mensajeConsultaResponse(response, ERROR_DESCARGA);
 	}
