@@ -23,7 +23,7 @@ public class DatosFormatoDto {
     private String concepto;
     private String fechaElabora;
     private String periodo;
-    private Double importe;
+    private String importe;
 	private String cantidadLetra;
 	private String datosBancarios;
 	private String observaciones;
