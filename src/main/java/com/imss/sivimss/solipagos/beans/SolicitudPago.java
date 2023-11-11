@@ -110,7 +110,7 @@ public class SolicitudPago {
 			query.append(" AND SP.ID_TIPO_SOLICITUD = " + busqueda.getIdTipoSolicitud());
 		}
 		if (busqueda.getFolioSolicitud() != null) {
-			query.append(" AND SP.CVE_FOLIO_GASTOS = '" + busqueda.getFolioSolicitud() + "' ");
+			query.append(" AND SP.ID_SOLICITUD_PAGO = '" + busqueda.getFolioSolicitud() + "' ");
 		}
 		log.info(query.toString());
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
@@ -340,7 +340,7 @@ public class SolicitudPago {
 		    query.append("prv.REF_PROVEEDOR AS beneficiario, sp.REF_CONCEPTO AS concepto, sp.REF_OBSERVACIONES AS observaciones, con.CVE_CONTRATO AS numContrato,  ");
 		    query.append("DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, sp.NOM_REMITENTE AS remitente,  ");
 		    query.append("CONCAT('DEL: ',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "'),' AL ',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "')) AS periodo,   ");
-		    query.append("sp.IMP_TOTAL AS importe, CONCAT(prv.REF_BANCO,' ',prv.CVE_BANCARIA,' ') AS datosBancarios  ");
+		    query.append("CONCAT('$ ', FORMAT(sp.IMP_TOTAL,2)) AS importe, CONCAT(prv.REF_BANCO,' ',prv.CVE_BANCARIA,' ') AS datosBancarios  ");
 		    query.append(",sfb.NOM_RESPONSABLE AS solicitado ");
 		    query.append("FROM SVT_SOLICITUD_PAGO sp  ");
 		    query.append("JOIN SVT_SUBDIRECCION_FIBESO sfb ON sfb.ID_SUBDIRECCION = sp.ID_UNIDAD_OPERATIVA  ");
@@ -352,7 +352,7 @@ public class SolicitudPago {
 			query.append("prv.REF_PROVEEDOR AS beneficiario, sp.REF_CONCEPTO AS concepto, sp.REF_OBSERVACIONES AS observaciones, con.CVE_CONTRATO AS numContrato,  ");
 		    query.append("DATE_FORMAT(sp.FEC_ELABORACION,'" + formatoFecha + "') AS fechaElabora, sp.NOM_REMITENTE AS remitente,  ");
 		    query.append("CONCAT('DEL: ',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "'),' AL',DATE_FORMAT(sp.FEC_INICIAL,'" + formatoFecha + "')) AS periodo,   ");
-		    query.append("sp.IMP_TOTAL AS importe, CONCAT(prv.REF_BANCO,' ',prv.CVE_BANCARIA,' ') AS datosBancarios  ");
+		    query.append("CONCAT('$ ', FORMAT(sp.IMP_TOTAL,2)) AS importe, CONCAT(prv.REF_BANCO,' ',prv.CVE_BANCARIA,' ') AS datosBancarios, vel.NOM_RESPO_SANITARIO AS solicitado  ");
 		    query.append("FROM SVT_SOLICITUD_PAGO sp  ");
 			query.append("JOIN SVC_VELATORIO vel ON vel.ID_VELATORIO = sp.ID_VELATORIO  ");
 			query.append("LEFT JOIN SVT_PROVEEDOR prv ON prv.ID_PROVEEDOR = sp.ID_PROVEEDOR ");
@@ -400,7 +400,7 @@ public class SolicitudPago {
 		Map<String, Object> envioDatos = new HashMap<>();
 		StringBuilder condicion = new StringBuilder(" ");
 
-		DatosRequest dr= consulta(request, reporteDto, formatoFecha);
+		DatosRequest dr= busqueda(request, reporteDto, formatoFecha);
 		
 		if (reporteDto.getIdOficina().equals(NIVEL_DELEGACION)) {
 			condicion.append(" AND VEL.ID_DELEGACION = ").append(reporteDto.getIdDelegacion());
@@ -433,7 +433,7 @@ public class SolicitudPago {
 	    		
 	private StringBuilder armaQuery(String formatoFecha) {
 		
-		StringBuilder query = new StringBuilder("SELECT SP.ID_SOLICITUD_PAGO AS idSolicitud, VEL.DES_VELATORIO AS desVelatorio, SP.ID_SOLICITUD_PAGO AS cveFolio,  ");
+		StringBuilder query = new StringBuilder("SELECT LPAD(SP.ID_SOLICITUD_PAGO,4,0) AS idSolicitud, VEL.DES_VELATORIO AS desVelatorio, NULLIF(SP.CVE_FOLIO_GASTOS,SP.CVE_FOLIO_CONSIGNADOS) AS cveFolio,  ");
 		query.append("(SELECT CVE_FOLIO FROM SVT_SOLICITUD_FOLIO WHERE ID_SOLICITUD_PAGO = idSolicitud LIMIT 1) AS cveFolios,  ");
 		query.append("SP.ID_UNIDAD_OPERATIVA AS idUnidadOperartiva, SP.ID_VELATORIO AS idVelatorio, SP.IMP_TOTAL AS importe,  ");
 		query.append("SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, DATE_FORMAT(SP.FEC_ELABORACION,'" + formatoFecha + "') AS fecElaboracion,  ");

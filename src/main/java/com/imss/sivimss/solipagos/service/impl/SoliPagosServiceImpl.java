@@ -381,7 +381,7 @@ public class SoliPagosServiceImpl implements SoliPagosService {
 			reporteDto.setConcepto(datos1.get(0).get("concepto")==null?"":datos1.get(0).get("concepto").toString());
 			reporteDto.setFechaElabora(datos1.get(0).get("fechaElabora").toString());
 			reporteDto.setPeriodo(datos1.get(0).get("periodo")==null?"":datos1.get(0).get("periodo").toString());
-			reporteDto.setImporte(Double.valueOf(datos1.get(0).get("importe").toString()));
+			reporteDto.setImporte(datos1.get(0).get("importe").toString());
 			reporteDto.setDatosBancarios(datos1.get(0).get("datosBancarios")==null?"":datos1.get(0).get("datosBancarios").toString());
 			reporteDto.setObservaciones(datos1.get(0).get("observaciones")==null?"":datos1.get(0).get("observaciones").toString());
 			reporteDto.setCantidadLetra(reporteDto.getCantidadLetra());
