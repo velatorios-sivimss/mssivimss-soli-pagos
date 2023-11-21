@@ -118,7 +118,10 @@ public class SolicitudPago {
 					+ "SP.CVE_FOLIO_CONSIGNADOS = '");
 			query.append(busqueda.getFolioSolicitud());
 			query.append("' \r\n"
-					+ ")\r\n");
+					+ "OR\r\n"
+					+ "SF.CVE_FOLIO = '");
+			query.append(busqueda.getFolioSolicitud());
+			query.append("' \r\n) \r\n");
 		}
 		log.info(query.toString());
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
@@ -445,14 +448,7 @@ public class SolicitudPago {
 				+ "LPAD(SP.ID_SOLICITUD_PAGO,4,0) AS idSolicitud,\r\n"
 				+ "VEL.DES_VELATORIO AS desVelatorio,\r\n"
 				+ "NULLIF(SP.CVE_FOLIO_GASTOS,SP.CVE_FOLIO_CONSIGNADOS) AS cveFolio,\r\n"
-				+ "(\r\n"
-				+ "SELECT \r\n"
-				+ "CVE_FOLIO \r\n"
-				+ "FROM SVT_SOLICITUD_FOLIO \r\n"
-				+ "WHERE \r\n"
-				+ "ID_SOLICITUD_PAGO = idSolicitud \r\n"
-				+ "LIMIT 1\r\n"
-				+ ") AS cveFolios,\r\n"
+				+ "SF.CVE_FOLIO  AS cveFolios,\r\n"
 				+ "SP.ID_UNIDAD_OPERATIVA AS idUnidadOperartiva, \r\n"
 				+ "SP.ID_VELATORIO AS idVelatorio, \r\n"
 				+ "SP.IMP_TOTAL AS importe,  \r\n"
@@ -475,8 +471,9 @@ public class SolicitudPago {
 				+ "JOIN SVC_TIPO_SOLICITUD_PAGO TIP ON TIP.ID_TIPO_SOLICITUD = SP.ID_TIPO_SOLICITUD  \r\n"
 				+ "JOIN SVC_ESTATUS_SOLICITUD_PAGO EST ON EST.ID_ESTATUS_SOLICITUD = SP.ID_ESTATUS_SOLICITUD  \r\n"
 				+ "LEFT JOIN SVC_VELATORIO VEL ON VEL.ID_VELATORIO = SP.ID_VELATORIO  \r\n"
-				+ "LEFT JOIN SVT_PROVEEDOR PRV ON PRV.ID_PROVEEDOR = SP.ID_PROVEEDOR  \r\n"
-				+ "WHERE 1 = 1  \r\n"
+				+ "LEFT JOIN SVT_PROVEEDOR PRV ON PRV.ID_PROVEEDOR = SP.ID_PROVEEDOR \r\n"
+				+ "LEFT JOIN  SVT_SOLICITUD_FOLIO SF ON SF.ID_SOLICITUD_PAGO = SP.ID_SOLICITUD_PAGO\r\n"
+				+ "WHERE 1 = 1 \r\n"
 				);
 		log.info(query.toString());
 		return query;
