@@ -101,7 +101,7 @@ public class SolicitudPago {
     	}
 		
 		if (busqueda.getFecInicial() != null) {
-    		query.append(" AND DATE(SP.FEC_ELABORACION) BETWEEN STR_TO_DATE('" + busqueda.getFecInicial() + "','" + formatoFecha + "') AND STR_TO_DATE('" + busqueda.getFecFinal() + "','" + formatoFecha + "')");
+    		query.append(" AND SP.FEC_ELABORACION BETWEEN '" + busqueda.getFecInicial() + "' AND '" + busqueda.getFecFinal() + "'\r\n");
     	}
 		if (busqueda.getEjercicioFiscal() != null) {
 			query.append(" AND SP.NUM_EJERCICIO_FISCAL = " + busqueda.getEjercicioFiscal());
@@ -110,7 +110,15 @@ public class SolicitudPago {
 			query.append(" AND SP.ID_TIPO_SOLICITUD = " + busqueda.getIdTipoSolicitud());
 		}
 		if (busqueda.getFolioSolicitud() != null) {
-			query.append(" AND SP.ID_SOLICITUD_PAGO = '" + busqueda.getFolioSolicitud() + "' ");
+			query.append("AND \r\n"
+					+ "(\r\n"
+					+ "SP.CVE_FOLIO_GASTOS = '" + busqueda.getFolioSolicitud());
+			query.append("' \r\n"
+					+ "OR\r\n"
+					+ "SP.CVE_FOLIO_CONSIGNADOS = '");
+			query.append(busqueda.getFolioSolicitud());
+			query.append("' \r\n"
+					+ ")\r\n");
 		}
 		log.info(query.toString());
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
@@ -433,20 +441,43 @@ public class SolicitudPago {
 	    		
 	private StringBuilder armaQuery(String formatoFecha) {
 		
-		StringBuilder query = new StringBuilder("SELECT LPAD(SP.ID_SOLICITUD_PAGO,4,0) AS idSolicitud, VEL.DES_VELATORIO AS desVelatorio, NULLIF(SP.CVE_FOLIO_GASTOS,SP.CVE_FOLIO_CONSIGNADOS) AS cveFolio,  ");
-		query.append("(SELECT CVE_FOLIO FROM SVT_SOLICITUD_FOLIO WHERE ID_SOLICITUD_PAGO = idSolicitud LIMIT 1) AS cveFolios,  ");
-		query.append("SP.ID_UNIDAD_OPERATIVA AS idUnidadOperartiva, SP.ID_VELATORIO AS idVelatorio, SP.IMP_TOTAL AS importe,  ");
-		query.append("SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, DATE_FORMAT(SP.FEC_ELABORACION,'" + formatoFecha + "') AS fecElaboracion,  ");
-	    query.append("SP.ID_TIPO_SOLICITUD AS idTipoSolicitid, TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud, PRV.ID_PROVEEDOR AS idProveedor,  ");
-	    query.append("IFNULL(IFNULL(PRV.REF_PROVEEDOR,SP.NOM_BENEFICIARIO),'') AS nomBeneficiario,  ");
-		query.append("SP.ID_ESTATUS_SOLICITUD AS idEstatus, EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud,  ");
-		query.append("SP.REF_MOTIVO_CANCELACION AS motCancelacion, SP.REF_MOTIVO_RECHAZO AS motRechazo ");
-		query.append("FROM SVT_SOLICITUD_PAGO SP  ");
-		query.append("JOIN SVC_TIPO_SOLICITUD_PAGO TIP ON TIP.ID_TIPO_SOLICITUD = SP.ID_TIPO_SOLICITUD  ");
-		query.append("JOIN SVC_ESTATUS_SOLICITUD_PAGO EST ON EST.ID_ESTATUS_SOLICITUD = SP.ID_ESTATUS_SOLICITUD  ");
-		query.append("LEFT JOIN SVC_VELATORIO VEL ON VEL.ID_VELATORIO = SP.ID_VELATORIO  ");
-		query.append("LEFT JOIN SVT_PROVEEDOR PRV ON PRV.ID_PROVEEDOR = SP.ID_PROVEEDOR  ");
-		query.append("WHERE 1 = 1 ");
+		StringBuilder query = new StringBuilder("SELECT\r\n"
+				+ "LPAD(SP.ID_SOLICITUD_PAGO,4,0) AS idSolicitud,\r\n"
+				+ "VEL.DES_VELATORIO AS desVelatorio,\r\n"
+				+ "NULLIF(SP.CVE_FOLIO_GASTOS,SP.CVE_FOLIO_CONSIGNADOS) AS cveFolio,\r\n"
+				+ "(\r\n"
+				+ "SELECT \r\n"
+				+ "CVE_FOLIO \r\n"
+				+ "FROM SVT_SOLICITUD_FOLIO \r\n"
+				+ "WHERE \r\n"
+				+ "ID_SOLICITUD_PAGO = idSolicitud \r\n"
+				+ "LIMIT 1\r\n"
+				+ ") AS cveFolios,\r\n"
+				+ "SP.ID_UNIDAD_OPERATIVA AS idUnidadOperartiva, \r\n"
+				+ "SP.ID_VELATORIO AS idVelatorio, \r\n"
+				+ "SP.IMP_TOTAL AS importe,  \r\n"
+				+ "SP.NUM_EJERCICIO_FISCAL AS ejercicioFiscal, \r\n"
+				+ "DATE_FORMAT(SP.FEC_ELABORACION,'");
+		query.append(formatoFecha);
+		query.append("') AS fecElaboracion,  \r\n"
+				+ "SP.ID_TIPO_SOLICITUD AS idTipoSolicitid, \r\n"
+				+ "TIP.DES_TIPO_SOLICITUD AS desTipoSolicitud, \r\n"
+				+ "PRV.ID_PROVEEDOR AS idProveedor,  \r\n"
+				+ "IFNULL(\r\n"
+				+ "IFNULL(\r\n"
+				+ "PRV.REF_PROVEEDOR,SP.NOM_BENEFICIARIO),'') AS nomBeneficiario,  \r\n"
+				+ "SP.ID_ESTATUS_SOLICITUD AS idEstatus, \r\n"
+				+ "EST.DES_ESTATUS_SOLICITUD AS desEstatusSolicitud,  \r\n"
+				+ "SP.REF_MOTIVO_CANCELACION AS motCancelacion, \r\n"
+				+ "SP.REF_MOTIVO_RECHAZO AS motRechazo \r\n"
+				+ "FROM \r\n"
+				+ "SVT_SOLICITUD_PAGO SP  \r\n"
+				+ "JOIN SVC_TIPO_SOLICITUD_PAGO TIP ON TIP.ID_TIPO_SOLICITUD = SP.ID_TIPO_SOLICITUD  \r\n"
+				+ "JOIN SVC_ESTATUS_SOLICITUD_PAGO EST ON EST.ID_ESTATUS_SOLICITUD = SP.ID_ESTATUS_SOLICITUD  \r\n"
+				+ "LEFT JOIN SVC_VELATORIO VEL ON VEL.ID_VELATORIO = SP.ID_VELATORIO  \r\n"
+				+ "LEFT JOIN SVT_PROVEEDOR PRV ON PRV.ID_PROVEEDOR = SP.ID_PROVEEDOR  \r\n"
+				+ "WHERE 1 = 1  \r\n"
+				);
 		log.info(query.toString());
 		return query;
 	}
