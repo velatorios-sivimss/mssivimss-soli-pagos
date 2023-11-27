@@ -104,10 +104,10 @@ public class SolicitudPago {
     		query.append(" AND SP.FEC_ELABORACION BETWEEN '" + busqueda.getFecInicial() + "' AND '" + busqueda.getFecFinal() + "'\r\n");
     	}
 		if (busqueda.getEjercicioFiscal() != null) {
-			query.append(" AND SP.NUM_EJERCICIO_FISCAL = " + busqueda.getEjercicioFiscal());
+			query.append(" AND SP.NUM_EJERCICIO_FISCAL = " + busqueda.getEjercicioFiscal() + "\r\n");
 		}
 		if (busqueda.getIdTipoSolicitud() != null) {
-			query.append(" AND SP.ID_TIPO_SOLICITUD = " + busqueda.getIdTipoSolicitud());
+			query.append(" AND SP.ID_TIPO_SOLICITUD = " + busqueda.getIdTipoSolicitud() + "\r\n");
 		}
 		if (busqueda.getFolioSolicitud() != null) {
 			query.append("AND \r\n"
