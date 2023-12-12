@@ -210,8 +210,13 @@ public class SolicitudPago {
 	}
 	
 	public DatosRequest factura(DatosRequest request, String folioFiscal) {
-		StringBuilder query = new StringBuilder("SELECT IFNULL(REF_PARTIDA_PRES,'') AS partidaPres, REF_CUENTA_CONTABLE AS cuentaContable, ");
-		query.append("IMP_TOTAL_SERV AS importeTotal FROM SVC_FACTURA WHERE CVE_FOLIO_FISCAL = '" + folioFiscal + "' ");
+		StringBuilder query = new StringBuilder("SELECT\r\n"
+				+ "IMP_COSTO_TOTAL\r\n"
+				+ "AS importeTotal\r\n"
+				+ "FROM\r\n"
+				+ "SVT_FACTURA_HOJA_CONSIGNACION\r\n"
+				+ "WHERE\r\n"
+				+ "CVE_FOLIO_FISCAL = '" + folioFiscal + "' ");
 		log.info(query.toString());
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
